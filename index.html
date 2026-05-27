@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>M&A Pitch Book Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js"></script>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy2: #112240;
+    --gold: #c9a84c;
+    --gold2: #e8c56d;
+    --white: #f8f9fa;
+    --gray: #8892b0;
+    --light: #ccd6f6;
+    --green: #27ae60;
+    --red: #e74c3c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--navy2);
+    border-bottom: 2px solid var(--gold);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  .logo span { color: var(--white); }
+
+  .tagline {
+    font-size: 13px;
+    color: var(--gray);
+    margin-top: 2px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+  }
+
+  .card {
+    background: var(--navy2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px;
+    padding: 28px;
+    margin-bottom: 28px;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 6px;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 5px;
+    padding: 10px 14px;
+    color: var(--white);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.07);
+  }
+
+  input::placeholder { color: rgba(136,146,176,0.6); }
+
+  select option { background: var(--navy2); }
+
+  .comp-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 10px;
+  }
+
+  .comp-row label { margin-bottom: 0; }
+
+  .btn-add {
+    background: none;
+    border: 1px dashed var(--gold);
+    color: var(--gold);
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    width: 100%;
+    margin-top: 8px;
+    transition: all 0.2s;
+  }
+  .btn-add:hover { background: rgba(201,168,76,0.1); }
+
+  .btn-remove {
+    background: none;
+    border: 1px solid rgba(231,76,60,0.4);
+    color: var(--red);
+    border-radius: 5px;
+    width: 34px;
+    height: 38px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .btn-remove:hover { background: rgba(231,76,60,0.15); }
+
+  .btn-generate {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    color: var(--navy);
+    border: none;
+    border-radius: 8px;
+    padding: 18px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .btn-generate:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(201,168,76,0.4); }
+  .btn-generate:active { transform: translateY(0); }
+  .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .notice {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--gold2);
+    margin-bottom: 20px;
+  }
+
+  .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .slide-preview {
+    background: #1a2a4a;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 4px;
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--gray);
+  }
+
+  .slide-preview .slide-num {
+    font-size: 16px;
+    color: var(--gold);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .comp-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+    gap: 10px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+
+  .comp-header span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+
+  .success-msg {
+    background: rgba(39,174,96,0.15);
+    border: 1px solid rgba(39,174,96,0.4);
+    border-radius: 6px;
+    padding: 14px 18px;
+    color: #2ecc71;
+    font-size: 14px;
+    display: none;
+    margin-top: 16px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">DealDeck <span>Generator</span></div>
+    <div class="tagline">M&A Pitch Book · Instant PowerPoint · No formatting required</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="notice">
+    ⚡ Fill in the deal details below. A client-ready 5-slide M&A pitch book will be generated and downloaded instantly — no sign-up, no data stored, everything runs in your browser.
+  </div>
+
+  <!-- SLIDE PREVIEW -->
+  <div class="card">
+    <div class="section-title">What you'll get</div>
+    <div class="preview-grid">
+      <div class="slide-preview"><span class="slide-num">1</span>Transaction Overview</div>
+      <div class="slide-preview"><span class="slide-num">2</span>Deal Rationale</div>
+      <div class="slide-preview"><span class="slide-num">3</span>Trading Comps</div>
+      <div class="slide-preview"><span class="slide-num">4</span>Valuation Football Field</div>
+      <div class="slide-preview"><span class="slide-num">5</span>Indicative Timeline</div>
+    </div>
+  </div>
+
+  <!-- DEAL PARTIES -->
+  <div class="card">
+    <div class="section-title">Transaction Parties</div>
+    <div class="grid-2">
+      <div>
+        <label>Acquirer / Buyer</label>
+        <input type="text" id="acquirer" placeholder="e.g. Apollo Global Management" />
+      </div>
+      <div>
+        <label>Target Company</label>
+        <input type="text" id="target" placeholder="e.g. Apex Industrials Ltd" />
+      </div>
+    </div>
+    <div class="grid-2 mt-16">
+      <div>
+        <label>Deal Type</label>
+        <select id="dealType">
+          <option value="Acquisition">Strategic Acquisition</option>
+          <option value="Merger">Merger of Equals</option>
+          <option value="LBO">Leveraged Buyout (LBO)</option>
+          <option value="Carve-out">Carve-out / Divestiture</option>
+        </select>
+      </div>
+      <div>
+        <label>Industry / Sector</label>
+        <input type="text" id="industry" placeholder="e.g. Industrials, Technology, Healthcare" />
+      </div>
+    </div>
+    <div class="grid-2 mt-16">
+      <div>
+        <label>Advisor / Bank Name</label>
+        <input type="text" id="bankName" placeholder="e.g. Goldman Sachs" />
+      </div>
+      <div>
+        <label>Advisor Role</label>
+        <select id="advisorRole">
+          <option value="Financial Advisor to the Acquirer">Financial Advisor to the Acquirer</option>
+          <option value="Financial Advisor to the Target">Financial Advisor to the Target</option>
+          <option value="Financial Advisor to the Board">Financial Advisor to the Board</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARGET FINANCIALS -->
+  <div class="card">
+    <div class="section-title">Target Company Financials (LTM)</div>
+    <div class="grid-3">
+      <div>
+        <label>Revenue ($M)</label>
+        <input type="number" id="revenue" placeholder="e.g. 850" />
+      </div>
+      <div>
+        <label>EBITDA ($M)</label>
+        <input type="number" id="ebitda" placeholder="e.g. 170" />
+      </div>
+      <div>
+        <label>EBIT ($M)</label>
+        <input type="number" id="ebit" placeholder="e.g. 130" />
+      </div>
+    </div>
+    <div class="grid-3 mt-16">
+      <div>
+        <label>Net Income ($M)</label>
+        <input type="number" id="netIncome" placeholder="e.g. 90" />
+      </div>
+      <div>
+        <label>Net Debt ($M)</label>
+        <input type="number" id="netDebt" placeholder="e.g. 200" />
+      </div>
+      <div>
+        <label>Shares Outstanding (M)</label>
+        <input type="number" id="shares" placeholder="e.g. 50" />
+      </div>
+    </div>
+  </div>
+
+  <!-- OFFER TERMS -->
+  <div class="card">
+    <div class="section-title">Offer Terms & Valuation</div>
+    <div class="grid-3">
+      <div>
+        <label>Offer Price Per Share ($)</label>
+        <input type="number" id="offerPrice" placeholder="e.g. 42.00" />
+      </div>
+      <div>
+        <label>Undisturbed Share Price ($)</label>
+        <input type="number" id="undisturbedPrice" placeholder="e.g. 33.50" />
+      </div>
+      <div>
+        <label>52-Week High ($)</label>
+        <input type="number" id="weekHigh" placeholder="e.g. 38.00" />
+      </div>
+    </div>
+    <div class="grid-3 mt-16">
+      <div>
+        <label>Transaction Enterprise Value ($M)</label>
+        <input type="number" id="tev" placeholder="e.g. 2,300" />
+      </div>
+      <div>
+        <label>Consideration Type</label>
+        <select id="consideration">
+          <option value="All Cash">All Cash</option>
+          <option value="All Stock">All Stock</option>
+          <option value="Cash & Stock (50/50)">Cash & Stock (50/50)</option>
+          <option value="Cash & Stock (70/30)">Cash & Stock (70/30)</option>
+        </select>
+      </div>
+      <div>
+        <label>Expected Synergies ($M)</label>
+        <input type="number" id="synergies" placeholder="e.g. 80" />
+      </div>
+    </div>
+  </div>
+
+  <!-- VALUATION RANGES -->
+  <div class="card">
+    <div class="section-title">Valuation Ranges (for Football Field)</div>
+    <div class="grid-3">
+      <div>
+        <label>DCF Low ($M)</label>
+        <input type="number" id="dcfLow" placeholder="e.g. 1,900" />
+      </div>
+      <div>
+        <label>DCF High ($M)</label>
+        <input type="number" id="dcfHigh" placeholder="e.g. 2,500" />
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <small style="color:var(--gray);font-size:11px;padding-bottom:10px;">Discounted Cash Flow</small>
+      </div>
+    </div>
+    <div class="grid-3 mt-16">
+      <div>
+        <label>Trading Comps Low ($M)</label>
+        <input type="number" id="tradingLow" placeholder="e.g. 1,800" />
+      </div>
+      <div>
+        <label>Trading Comps High ($M)</label>
+        <input type="number" id="tradingHigh" placeholder="e.g. 2,200" />
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <small style="color:var(--gray);font-size:11px;padding-bottom:10px;">Public Comparables</small>
+      </div>
+    </div>
+    <div class="grid-3 mt-16">
+      <div>
+        <label>Precedent Transactions Low ($M)</label>
+        <input type="number" id="prevLow" placeholder="e.g. 2,000" />
+      </div>
+      <div>
+        <label>Precedent Transactions High ($M)</label>
+        <input type="number" id="prevHigh" placeholder="e.g. 2,600" />
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <small style="color:var(--gray);font-size:11px;padding-bottom:10px;">M&A Transactions</small>
+      </div>
+    </div>
+    <div class="grid-3 mt-16">
+      <div>
+        <label>LBO Low ($M) <span style="color:var(--gray)">(optional)</span></label>
+        <input type="number" id="lboLow" placeholder="e.g. 1,700" />
+      </div>
+      <div>
+        <label>LBO High ($M) <span style="color:var(--gray)">(optional)</span></label>
+        <input type="number" id="lboHigh" placeholder="e.g. 2,100" />
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <small style="color:var(--gray);font-size:11px;padding-bottom:10px;">Leveraged Buyout</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARABLE COMPANIES -->
+  <div class="card">
+    <div class="section-title">Comparable Companies (Trading Comps)</div>
+    <div class="comp-header">
+      <span>Company Name</span>
+      <span>EV/Revenue</span>
+      <span>EV/EBITDA</span>
+      <span>P/E</span>
+      <span>Revenue ($M)</span>
+      <span></span>
+    </div>
+    <div id="compsContainer">
+      <!-- Rows injected by JS -->
+    </div>
+    <button class="btn-add" onclick="addComp()">+ Add Comparable Company</button>
+  </div>
+
+  <!-- DEAL RATIONALE -->
+  <div class="card">
+    <div class="section-title">Deal Rationale (3 Key Points)</div>
+    <div>
+      <label>Strategic Point 1</label>
+      <input type="text" id="rationale1" placeholder="e.g. Accelerates entry into high-growth emerging markets across APAC" />
+    </div>
+    <div class="mt-16">
+      <label>Strategic Point 2</label>
+      <input type="text" id="rationale2" placeholder="e.g. Adds proprietary technology platform with 85% gross margins" />
+    </div>
+    <div class="mt-16">
+      <label>Strategic Point 3</label>
+      <input type="text" id="rationale3" placeholder="e.g. Realises $80M+ in identified cost and revenue synergies within 24 months" />
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="card">
+    <div class="section-title">Indicative Transaction Timeline</div>
+    <div class="grid-2">
+      <div>
+        <label>Announcement Date</label>
+        <input type="date" id="announcementDate" />
+      </div>
+      <div>
+        <label>Expected Close Date</label>
+        <input type="date" id="closeDate" />
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-generate" id="generateBtn" onclick="generatePPT()">
+    ⬇ Generate &amp; Download Pitch Book
+  </button>
+  <div class="success-msg" id="successMsg">✅ Pitch book generated! Check your downloads folder.</div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// COMPS TABLE MANAGEMENT
+// ─────────────────────────────────────────
+const defaultComps = [
+  { name: "Competitor A", evRev: "2.3x", evEbitda: "11.5x", pe: "18.2x", rev: "620" },
+  { name: "Competitor B", evRev: "1.9x", evEbitda: "10.1x", pe: "15.8x", rev: "780" },
+  { name: "Competitor C", evRev: "2.7x", evEbitda: "13.2x", pe: "21.4x", rev: "430" },
+];
+
+function addComp(data = {}) {
+  const container = document.getElementById("compsContainer");
+  const row = document.createElement("div");
+  row.className = "comp-row";
+  row.innerHTML = `
+    <input type="text" placeholder="Company name" value="${data.name || ''}" class="comp-name" />
+    <input type="text" placeholder="e.g. 2.5x" value="${data.evRev || ''}" class="comp-evrev" />
+    <input type="text" placeholder="e.g. 12.0x" value="${data.evEbitda || ''}" class="comp-evebitda" />
+    <input type="text" placeholder="e.g. 18.0x" value="${data.pe || ''}" class="comp-pe" />
+    <input type="number" placeholder="Revenue $M" value="${data.rev || ''}" class="comp-rev" />
+    <button class="btn-remove" onclick="this.parentElement.remove()" title="Remove">×</button>
+  `;
+  container.appendChild(row);
+}
+
+function getComps() {
+  return Array.from(document.querySelectorAll(".comp-row")).map(row => ({
+    name: row.querySelector(".comp-name").value || "—",
+    evRev: row.querySelector(".comp-evrev").value || "—",
+    evEbitda: row.querySelector(".comp-evebitda").value || "—",
+    pe: row.querySelector(".comp-pe").value || "—",
+    rev: row.querySelector(".comp-rev").value || "—",
+  }));
+}
+
+function v(id) { return document.getElementById(id)?.value || ""; }
+function n(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+
+function formatDate(dateStr) {
+  if (!dateStr) return "TBD";
+  const d = new Date(dateStr + "T12:00:00");
+  return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+}
+
+function calcPremium(offer, undisturbed) {
+  if (!offer || !undisturbed) return "—";
+  return ((offer / undisturbed - 1) * 100).toFixed(1) + "%";
+}
+
+// ─────────────────────────────────────────
+// PPT GENERATION
+// ─────────────────────────────────────────
+async function generatePPT() {
+  const btn = document.getElementById("generateBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Generating...";
+
+  const pptx = new PptxGenJS();
+  pptx.layout = "LAYOUT_WIDE"; // 13.33 x 7.5
+
+  // ── Colors ──────────────────────────────
+  const NAVY   = "0A1628";
+  const NAVY2  = "112240";
+  const GOLD   = "C9A84C";
+  const GOLD2  = "E8C56D";
+  const WHITE  = "F8F9FA";
+  const LGRAY  = "8892B0";
+  const DGRAY  = "1A2A4A";
+
+  const acquirer    = v("acquirer")  || "Acquirer";
+  const target      = v("target")    || "Target Company";
+  const dealType    = v("dealType");
+  const industry    = v("industry")  || "Diversified";
+  const bankName    = v("bankName")  || "Your Bank";
+  const advisorRole = v("advisorRole");
+  const revenue     = n("revenue");
+  const ebitda      = n("ebitda");
+  const ebit        = n("ebit");
+  const netIncome   = n("netIncome");
+  const netDebt     = n("netDebt");
+  const shares      = n("shares");
+  const offerPrice  = n("offerPrice");
+  const undisturbed = n("undisturbedPrice");
+  const weekHigh    = n("weekHigh");
+  const tev         = n("tev");
+  const consideration = v("consideration");
+  const synergies   = n("synergies");
+  const comps       = getComps();
+  const rationale   = [v("rationale1"), v("rationale2"), v("rationale3")].filter(Boolean);
+  const annDate     = formatDate(v("announcementDate"));
+  const closeDate   = formatDate(v("closeDate"));
+  const equity      = shares && offerPrice ? (shares * offerPrice).toFixed(0) : "—";
+  const premium     = calcPremium(offerPrice, undisturbed);
+  const ebitdaMargin = revenue && ebitda ? ((ebitda/revenue)*100).toFixed(1)+"%" : "—";
+
+  // Helper: dark slide background
+  function bgSlide(slide) {
+    slide.background = { color: NAVY };
+  }
+
+  // Helper: gold rule line
+  function goldLine(slide, y = 1.0, w = 12.0, x = 0.65) {
+    slide.addShape(pptx.ShapeType.rect, { x, y, w, h: 0.03, fill: { color: GOLD }, line: { color: GOLD } });
+  }
+
+  // Helper: section label
+  function sectionLabel(slide, text, x, y) {
+    slide.addText(text.toUpperCase(), {
+      x, y, w: 5, h: 0.25,
+      fontSize: 7, bold: true, color: GOLD, charSpacing: 2,
+    });
+  }
+
+  // ── SLIDE 1: TRANSACTION OVERVIEW ───────
+  {
+    const s = pptx.addSlide();
+    bgSlide(s);
+
+    // Left accent bar
+    s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.35, h: 7.5, fill: { color: GOLD }, line: { color: GOLD } });
+
+    // Header area
+    s.addShape(pptx.ShapeType.rect, { x: 0.35, y: 0, w: 12.98, h: 2.1, fill: { color: NAVY2 }, line: { color: NAVY2 } });
+
+    // Bank name (top left)
+    s.addText(bankName.toUpperCase(), {
+      x: 0.65, y: 0.22, w: 6, h: 0.35,
+      fontSize: 9, bold: true, color: GOLD, charSpacing: 3,
+    });
+
+    // Confidential badge
+    s.addText("STRICTLY CONFIDENTIAL", {
+      x: 9.2, y: 0.22, w: 3.6, h: 0.28,
+      fontSize: 7.5, bold: true, color: LGRAY, charSpacing: 1, align: "right",
+    });
+
+    // Deal headline
+    s.addText(`${acquirer} / ${target}`, {
+      x: 0.65, y: 0.65, w: 12.0, h: 0.7,
+      fontSize: 28, bold: true, color: WHITE,
+    });
+
+    // Deal type tag
+    s.addText(`${dealType}  ·  ${industry}`, {
+      x: 0.65, y: 1.45, w: 10, h: 0.35,
+      fontSize: 13, color: GOLD2,
+    });
+
+    goldLine(s, 2.2);
+
+    // ── Key Stats boxes ──
+    const stats = [
+      { label: "Enterprise Value", value: tev ? `$${tev.toLocaleString()}M` : "TBD" },
+      { label: "Equity Value", value: equity !== "—" ? `$${Number(equity).toLocaleString()}M` : "TBD" },
+      { label: "Offer Price", value: offerPrice ? `$${offerPrice.toFixed(2)}` : "TBD" },
+      { label: "Premium to Undisturbed", value: premium },
+      { label: "Consideration", value: consideration },
+    ];
+
+    const bw = 2.3, bh = 1.25, bStart = 0.65, by = 2.45, gap = 0.12;
+    stats.forEach((stat, i) => {
+      const bx = bStart + i * (bw + gap);
+      s.addShape(pptx.ShapeType.rect, { x: bx, y: by, w: bw, h: bh, fill: { color: DGRAY }, line: { color: GOLD, pt: 0.5 } });
+      s.addText(stat.value, { x: bx, y: by + 0.18, w: bw, h: 0.65, fontSize: 18, bold: true, color: WHITE, align: "center" });
+      s.addText(stat.label.toUpperCase(), { x: bx, y: by + 0.82, w: bw, h: 0.3, fontSize: 7, color: GOLD, align: "center", charSpacing: 1 });
+    });
+
+    // ── Target financials strip ──
+    goldLine(s, 3.95);
+    sectionLabel(s, "Target LTM Financials", 0.65, 4.05);
+
+    const fins = [
+      { label: "Revenue", val: revenue ? `$${revenue}M` : "—" },
+      { label: "EBITDA", val: ebitda ? `$${ebitda}M` : "—" },
+      { label: "EBITDA Margin", val: ebitdaMargin },
+      { label: "EBIT", val: ebit ? `$${ebit}M` : "—" },
+      { label: "Net Income", val: netIncome ? `$${netIncome}M` : "—" },
+      { label: "Net Debt", val: netDebt ? `$${netDebt}M` : "—" },
+    ];
+
+    fins.forEach((f, i) => {
+      const fx = 0.65 + i * 2.05;
+      s.addText(f.val, { x: fx, y: 4.35, w: 1.9, h: 0.45, fontSize: 16, bold: true, color: WHITE });
+      s.addText(f.label.toUpperCase(), { x: fx, y: 4.8, w: 1.9, h: 0.25, fontSize: 7, color: LGRAY, charSpacing: 1 });
+    });
+
+    // ── Dates strip ──
+    goldLine(s, 5.35);
+    sectionLabel(s, "Transaction Timeline", 0.65, 5.45);
+
+    const dates = [
+      { label: "Announcement", val: annDate },
+      { label: "Expected Closing", val: closeDate },
+      { label: "Advisor Role", val: bankName },
+      { label: "Mandate", val: advisorRole },
+    ];
+    dates.forEach((d, i) => {
+      const dx = 0.65 + i * 3.0;
+      s.addText(d.val, { x: dx, y: 5.75, w: 2.8, h: 0.35, fontSize: 11, bold: true, color: WHITE });
+      s.addText(d.label.toUpperCase(), { x: dx, y: 6.1, w: 2.8, h: 0.25, fontSize: 7, color: LGRAY, charSpacing: 1 });
+    });
+
+    // Footer
+    s.addText(`${bankName}  |  Highly Confidential  |  For Discussion Purposes Only`, {
+      x: 0.35, y: 7.1, w: 12.98, h: 0.28, fontSize: 7, color: LGRAY, align: "center",
+    });
+  }
+
+  // ── SLIDE 2: DEAL RATIONALE ─────────────
+  {
+    const s = pptx.addSlide();
+    bgSlide(s);
+    s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.35, h: 7.5, fill: { color: GOLD }, line: { color: GOLD } });
+    s.addShape(pptx.ShapeType.rect, { x: 0.35, y: 0, w: 12.98, h: 1.1, fill: { color: NAVY2 }, line: { color: NAVY2 } });
+
+    s.addText("DEAL RATIONALE", { x: 0.65, y: 0.18, w: 6, h: 0.3, fontSize: 9, bold: true, color: GOLD, charSpacing: 3 });
+    s.addText(`Why ${acquirer} is acquiring ${target}`, {
+      x: 0.65, y: 0.48, w: 12.0, h: 0.45, fontSize: 20, bold: true, color: WHITE,
+    });
+    goldLine(s, 1.2);
+
+    // Strategic points
+    const pts = rationale.length > 0 ? rationale : [
+      "Compelling strategic fit with strong operational synergies",
+      "Attractive valuation relative to fundamental and market-based analyses",
+      "Combined entity creates a market leader in the sector",
+    ];
+
+    pts.forEach((pt, i) => {
+      const py = 1.55 + i * 1.6;
+      const numX = 0.65, numY = py, bx = 1.2, by = py;
+      // Number circle
+      s.addShape(pptx.ShapeType.ellipse, { x: numX, y: numY, w: 0.5, h: 0.5, fill: { color: GOLD }, line: { color: GOLD } });
+      s.addText(`${i+1}`, { x: numX, y: numY, w: 0.5, h: 0.5, fontSize: 14, bold: true, color: NAVY, align: "center", valign: "middle" });
+      // Content box
+      s.addShape(pptx.ShapeType.rect, { x: bx, y: by, w: 11.5, h: 1.25, fill: { color: DGRAY }, line: { color: GOLD, pt: 0.5 } });
+      s.addText(pt, { x: bx + 0.25, y: by + 0.12, w: 11.0, h: 0.9, fontSize: 15, color: WHITE, valign: "middle" });
+      if (i === 2 && synergies) {
+        s.addText(`Identified synergies: $${synergies}M`, {
+          x: bx + 0.25, y: by + 0.88, w: 5, h: 0.25, fontSize: 9, color: GOLD,
+        });
+      }
+    });
+
+    // Footer
+    s.addText(`${bankName}  |  Highly Confidential  |  For Discussion Purposes Only`, {
+      x: 0.35, y: 7.1, w: 12.98, h: 0.28, fontSize: 7, color: LGRAY, align: "center",
+    });
+  }
+
+  // ── SLIDE 3: TRADING COMPS ──────────────
+  {
+    const s = pptx.addSlide();
+    bgSlide(s);
+    s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.35, h: 7.5, fill: { color: GOLD }, line: { color: GOLD } });
+    s.addShape(pptx.ShapeType.rect, { x: 0.35, y: 0, w: 12.98, h: 1.1, fill: { color: NAVY2 }, line: { color: NAVY2 } });
+
+    s.addText("COMPARABLE COMPANIES ANALYSIS", { x: 0.65, y: 0.18, w: 8, h: 0.3, fontSize: 9, bold: true, color: GOLD, charSpacing: 3 });
+    s.addText(`${target} vs. Public Comparables — LTM`, {
+      x: 0.65, y: 0.48, w: 12.0, h: 0.45, fontSize: 20, bold: true, color: WHITE,
+    });
+    goldLine(s, 1.2);
+
+    // Table headers
+    const cols = ["Company", "Revenue ($M)", "EV / Revenue", "EV / EBITDA", "P / E"];
+    const colW  = [4.0, 2.2, 2.0, 2.0, 2.0];
+    const colX  = [0.65, 4.65, 6.85, 8.85, 10.85];
+
+    // Header row
+    s.addShape(pptx.ShapeType.rect, { x: 0.65, y: 1.35, w: 12.0, h: 0.45, fill: { color: GOLD }, line: { color: GOLD } });
+    cols.forEach((col, i) => {
+      s.addText(col, {
+        x: colX[i], y: 1.38, w: colW[i], h: 0.38,
+        fontSize: 9, bold: true, color: NAVY, align: i === 0 ? "left" : "center",
+      });
+    });
+
+    // Target row (highlighted)
+    const targetRowY = 1.88;
+    s.addShape(pptx.ShapeType.rect, { x: 0.65, y: targetRowY, w: 12.0, h: 0.45, fill: { color: "1A3A6A" }, line: { color: GOLD, pt: 1 } });
+    const tevRevMultiple = tev && revenue ? (tev / revenue).toFixed(1) + "x" : "—";
+    const tevEbMultiple  = tev && ebitda  ? (tev / ebitda).toFixed(1)  + "x" : "—";
+    const peMultiple     = offerPrice && shares && netIncome ? ((offerPrice * shares) / netIncome).toFixed(1) + "x" : "—";
+    const targetRow = [target + " (Target)", revenue ? revenue.toLocaleString() : "—", tevRevMultiple, tevEbMultiple, peMultiple];
+    targetRow.forEach((val, i) => {
+      s.addText(val, {
+        x: colX[i], y: targetRowY + 0.04, w: colW[i], h: 0.38,
+        fontSize: 10, bold: true, color: GOLD2, align: i === 0 ? "left" : "center",
+      });
+    });
+
+    // Comp rows
+    comps.forEach((comp, idx) => {
+      const ry = 2.4 + idx * 0.48;
+      const bg = idx % 2 === 0 ? DGRAY : "14223A";
+      s.addShape(pptx.ShapeType.rect, { x: 0.65, y: ry, w: 12.0, h: 0.42, fill: { color: bg }, line: { color: bg } });
+      const vals = [comp.name, comp.rev !== "—" ? Number(comp.rev).toLocaleString() : "—", comp.evRev, comp.evEbitda, comp.pe];
+      vals.forEach((val, i) => {
+        s.addText(val, {
+          x: colX[i], y: ry + 0.04, w: colW[i], h: 0.34,
+          fontSize: 10, color: WHITE, align: i === 0 ? "left" : "center",
+        });
+      });
+    });
+
+    // Mean row
+    const meanRowY = 2.4 + comps.length * 0.48 + 0.1;
+    s.addShape(pptx.ShapeType.rect, { x: 0.65, y: meanRowY, w: 12.0, h: 0.42, fill: { color: NAVY2 }, line: { color: GOLD, pt: 0.5 } });
+
+    function avgMultiple(field) {
+      const vals = comps.map(c => parseFloat(c[field])).filter(v => !isNaN(v));
+      if (!vals.length) return "—";
+      return (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1) + "x";
+    }
+    function avgRev() {
+      const vals = comps.map(c => parseFloat(c.rev)).filter(v => !isNaN(v));
+      if (!vals.length) return "—";
+      return Math.round(vals.reduce((a,b) => a+b, 0) / vals.length).toLocaleString();
+    }
+
+    const meanVals = ["Comparable Mean", avgRev(), avgMultiple("evRev"), avgMultiple("evEbitda"), avgMultiple("pe")];
+    meanVals.forEach((val, i) => {
+      s.addText(val, {
+        x: colX[i], y: meanRowY + 0.04, w: colW[i], h: 0.34,
+        fontSize: 10, bold: true, color: GOLD2, align: i === 0 ? "left" : "center",
+      });
+    });
+
+    // Footnote
+    s.addText("Source: Public filings, Bloomberg. LTM = Last Twelve Months. Multiples based on closing prices.", {
+      x: 0.65, y: 6.9, w: 12.0, h: 0.28, fontSize: 7.5, color: LGRAY,
+    });
+    s.addText(`${bankName}  |  Highly Confidential  |  For Discussion Purposes Only`, {
+      x: 0.35, y: 7.2, w: 12.98, h: 0.22, fontSize: 7, color: LGRAY, align: "center",
+    });
+  }
+
+  // ── SLIDE 4: FOOTBALL FIELD ─────────────
+  {
+    const s = pptx.addSlide();
+    bgSlide(s);
+    s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.35, h: 7.5, fill: { color: GOLD }, line: { color: GOLD } });
+    s.addShape(pptx.ShapeType.rect, { x: 0.35, y: 0, w: 12.98, h: 1.1, fill: { color: NAVY2 }, line: { color: NAVY2 } });
+
+    s.addText("VALUATION SUMMARY", { x: 0.65, y: 0.18, w: 6, h: 0.3, fontSize: 9, bold: true, color: GOLD, charSpacing: 3 });
+    s.addText("Football Field — Implied Enterprise Value ($M)", {
+      x: 0.65, y: 0.48, w: 12.0, h: 0.45, fontSize: 20, bold: true, color: WHITE,
+    });
+    goldLine(s, 1.2);
+
+    // Ranges data
+    const ranges = [
+      { label: "DCF Analysis",             low: n("dcfLow"),     high: n("dcfHigh"),    color: "2E86AB" },
+      { label: "Trading Comps",            low: n("tradingLow"), high: n("tradingHigh"), color: "A23B72" },
+      { label: "Precedent Transactions",   low: n("prevLow"),    high: n("prevHigh"),    color: "F18F01" },
+      { label: "LBO Analysis",             low: n("lboLow"),     high: n("lboHigh"),     color: "C73E1D" },
+    ].filter(r => r.low > 0 && r.high > 0);
+
+    if (ranges.length === 0) {
+      s.addText("No valuation ranges provided — please enter DCF, trading comps, and transaction comp ranges.", {
+        x: 0.65, y: 3, w: 12, h: 1, fontSize: 14, color: LGRAY, align: "center",
+      });
+    } else {
+      const allVals = ranges.flatMap(r => [r.low, r.high]);
+      const globalMin = Math.min(...allVals) * 0.92;
+      const globalMax = Math.max(...allVals) * 1.08;
+      const chartW = 8.5;
+      const chartX0 = 3.7;
+      const chartY0 = 1.55;
+      const rowH = 0.9;
+      const rowGap = 0.25;
+
+      function toX(val) {
+        return chartX0 + ((val - globalMin) / (globalMax - globalMin)) * chartW;
+      }
+
+      // X axis labels
+      const ticks = 5;
+      for (let i = 0; i <= ticks; i++) {
+        const val = globalMin + (i / ticks) * (globalMax - globalMin);
+        const tx = chartX0 + (i / ticks) * chartW;
+        s.addText(`$${Math.round(val).toLocaleString()}M`, {
+          x: tx - 0.4, y: chartY0 + ranges.length * (rowH + rowGap) + 0.05,
+          w: 0.8, h: 0.25, fontSize: 7.5, color: LGRAY, align: "center",
+        });
+        // Gridline
+        s.addShape(pptx.ShapeType.line, {
+          x: tx, y: chartY0, w: 0, h: ranges.length * (rowH + rowGap),
+          line: { color: "1E3050", pt: 0.5 },
+        });
+      }
+
+      ranges.forEach((r, i) => {
+        const ry = chartY0 + i * (rowH + rowGap);
+        const bx = toX(r.low);
+        const bw = toX(r.high) - toX(r.low);
+
+        // Row label
+        s.addText(r.label, {
+          x: 0.65, y: ry + 0.25, w: 2.9, h: 0.4,
+          fontSize: 10, bold: true, color: WHITE, align: "right",
+        });
+
+        // Bar background
+        s.addShape(pptx.ShapeType.rect, { x: chartX0, y: ry + 0.15, w: chartW, h: rowH * 0.6, fill: { color: DGRAY }, line: { color: DGRAY } });
+
+        // Bar
+        s.addShape(pptx.ShapeType.rect, { x: bx, y: ry + 0.15, w: bw, h: rowH * 0.6, fill: { color: r.color }, line: { color: r.color } });
+
+        // Low / High labels
+        s.addText(`$${r.low.toLocaleString()}M`, { x: bx - 0.75, y: ry + 0.22, w: 0.7, h: 0.28, fontSize: 8, color: WHITE, align: "right" });
+        s.addText(`$${r.high.toLocaleString()}M`, { x: bx + bw + 0.03, y: ry + 0.22, w: 0.75, h: 0.28, fontSize: 8, color: WHITE });
+      });
+
+      // Offer price line
+      if (tev) {
+        const offerX = toX(tev);
+        const lineTop = chartY0;
+        const lineBot = chartY0 + ranges.length * (rowH + rowGap);
+        s.addShape(pptx.ShapeType.line, {
+          x: offerX, y: lineTop, w: 0, h: lineBot - lineTop,
+          line: { color: GOLD2, pt: 1.5, dashType: "dash" },
+        });
+        s.addText(`Offer: $${tev.toLocaleString()}M`, {
+          x: offerX - 0.9, y: lineTop - 0.35, w: 1.8, h: 0.28,
+          fontSize: 8.5, bold: true, color: GOLD2, align: "center",
+        });
+      }
+    }
+
+    s.addText(`${bankName}  |  Highly Confidential  |  For Discussion Purposes Only`, {
+      x: 0.35, y: 7.2, w: 12.98, h: 0.22, fontSize: 7, color: LGRAY, align: "center",
+    });
+  }
+
+  // ── SLIDE 5: INDICATIVE TIMELINE ────────
+  {
+    const s = pptx.addSlide();
+    bgSlide(s);
+    s.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.35, h: 7.5, fill: { color: GOLD }, line: { color: GOLD } });
+    s.addShape(pptx.ShapeType.rect, { x: 0.35, y: 0, w: 12.98, h: 1.1, fill: { color: NAVY2 }, line: { color: NAVY2 } });
+
+    s.addText("INDICATIVE TRANSACTION TIMELINE", { x: 0.65, y: 0.18, w: 10, h: 0.3, fontSize: 9, bold: true, color: GOLD, charSpacing: 3 });
+    s.addText(`Path to Close: ${acquirer} / ${target}`, {
+      x: 0.65, y: 0.48, w: 12.0, h: 0.45, fontSize: 20, bold: true, color: WHITE,
+    });
+    goldLine(s, 1.2);
+
+    // Timeline phases
+    const phases = [
+      { label: "Phase I",    title: "Signing & Announcement",       desc: "Transaction announced, definitive agreement executed, financing committed",      week: "Week 0",     color: GOLD },
+      { label: "Phase II",   title: "Regulatory & Shareholder",      desc: "HSR filing, shareholder proxy statement filed, regulatory submissions made",     week: "Weeks 2–8",  color: "2E86AB" },
+      { label: "Phase III",  title: "Due Diligence & Integration",   desc: "Final due diligence, integration planning workstreams initiated, synergy review",week: "Weeks 4–12", color: "A23B72" },
+      { label: "Phase IV",   title: "Closing",                       desc: "Regulatory clearance received, conditions satisfied, transaction closes",        week: "Weeks 12–20",color: "27AE60" },
+    ];
+
+    phases.forEach((ph, i) => {
+      const py = 1.5 + i * 1.35;
+      // Phase pill
+      s.addShape(pptx.ShapeType.rect, { x: 0.65, y: py, w: 1.6, h: 0.6, fill: { color: ph.color }, line: { color: ph.color }, rectRadius: 0.05 });
+      s.addText(ph.label, { x: 0.65, y: py, w: 1.6, h: 0.6, fontSize: 10, bold: true, color: NAVY, align: "center", valign: "middle" });
+
+      // Week label
+      s.addText(ph.week, { x: 2.35, y: py, w: 1.4, h: 0.6, fontSize: 9, bold: true, color: ph.color, valign: "middle" });
+
+      // Title + description
+      s.addShape(pptx.ShapeType.rect, { x: 3.8, y: py, w: 8.8, h: 0.58, fill: { color: DGRAY }, line: { color: ph.color, pt: 0.5 } });
+      s.addText(ph.title, { x: 3.95, y: py + 0.03, w: 8.5, h: 0.28, fontSize: 10, bold: true, color: WHITE });
+      s.addText(ph.desc,  { x: 3.95, y: py + 0.3,  w: 8.5, h: 0.22, fontSize: 8.5, color: LGRAY });
+
+      // Connector arrow (except last)
+      if (i < phases.length - 1) {
+        s.addShape(pptx.ShapeType.line, {
+          x: 1.45, y: py + 0.6, w: 0, h: 0.75,
+          line: { color: LGRAY, pt: 1, dashType: "sysDot" },
+        });
+      }
+    });
+
+    // Key dates
+    goldLine(s, 6.8);
+    s.addText(`Announcement: ${annDate}   ·   Expected Close: ${closeDate}   ·   ${bankName} — ${advisorRole}`, {
+      x: 0.65, y: 6.88, w: 12.0, h: 0.25, fontSize: 8.5, color: GOLD2, align: "center",
+    });
+    s.addText(`${bankName}  |  Highly Confidential  |  For Discussion Purposes Only`, {
+      x: 0.35, y: 7.2, w: 12.98, h: 0.22, fontSize: 7, color: LGRAY, align: "center",
+    });
+  }
+
+  // ── SAVE ──────────────────────────────────
+  const filename = `${(acquirer || "Acquirer").replace(/\s+/g,"-")}_${(target || "Target").replace(/\s+/g,"-")}_PitchBook`;
+  await pptx.writeFile({ fileName: filename });
+
+  btn.disabled = false;
+  btn.textContent = "⬇ Generate & Download Pitch Book";
+  const msg = document.getElementById("successMsg");
+  msg.style.display = "block";
+  setTimeout(() => { msg.style.display = "none"; }, 5000);
+}
+
+// ── INIT ─────────────────────────────────
+defaultComps.forEach(addComp);
+
+// Set default dates
+const today = new Date();
+document.getElementById("announcementDate").value = today.toISOString().split("T")[0];
+const close = new Date(today);
+close.setMonth(close.getMonth() + 6);
+document.getElementById("closeDate").value = close.toISOString().split("T")[0];
+</script>
+</body>
+</html>
