@@ -1,258 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>DealDeck Pro — M&A Pitch Book Builder</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DealDeck Pro — M&A Pitch Book Generator</title>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 <style>
-:root{--n:#0a1628;--n2:#112240;--n3:#1a2a4a;--n4:#0d1f3c;--g:#c9a84c;--g2:#e8c56d;--g3:rgba(201,168,76,.13);--w:#f8f9fa;--gr:#8892b0;--lg:#ccd6f6;--grn:#27ae60;--rd:#e74c3c;--bl:#2e86ab;--pr:#a23b72}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--n);color:var(--w);min-height:100vh;display:flex;flex-direction:column}
-.hdr{background:var(--n2);border-bottom:2px solid var(--g);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200}
-.logo{font-size:17px;font-weight:700;color:var(--g)}.logo span{color:var(--w)}
-.hdr-r{display:flex;align-items:center;gap:8px}
-.deal-sel{background:var(--n3);border:1px solid rgba(201,168,76,.3);color:var(--w);border-radius:5px;padding:5px 10px;font-size:12px;font-family:inherit;cursor:pointer;outline:none;max-width:200px}
-.btn-s{background:none;border:1px solid rgba(201,168,76,.35);color:var(--g);border-radius:5px;padding:5px 12px;font-size:11px;font-family:inherit;cursor:pointer;transition:.15s}.btn-s:hover{background:var(--g3)}
-.tabs{display:flex;background:var(--n4);border-bottom:1px solid rgba(201,168,76,.2);padding:0 20px;overflow-x:auto}
-.tab{padding:11px 18px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gr);cursor:pointer;border-bottom:2px solid transparent;transition:.15s;white-space:nowrap}
-.tab.active{color:var(--g);border-bottom-color:var(--g)}
-.tc{display:none}.tc.active{display:block}
-.con{max-width:1080px;margin:0 auto;padding:24px 20px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.card{background:var(--n2);border:1px solid rgba(201,168,76,.18);border-radius:8px;padding:22px;margin-bottom:18px}
-.st{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid rgba(201,168,76,.18)}
-label{display:block;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gr);margin-bottom:4px}
-input,select,textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.2);border-radius:5px;padding:8px 11px;color:var(--w);font-size:13px;font-family:inherit;outline:none;transition:.15s}
-input:focus,select:focus,textarea:focus{border-color:var(--g);background:rgba(201,168,76,.05)}
-input::placeholder{color:rgba(136,146,176,.45)}
-select option{background:var(--n2)}
-.fr{margin-bottom:12px}
-.bld{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
-.lib{background:var(--n2);border:1px solid rgba(201,168,76,.18);border-radius:8px;position:sticky;top:68px;max-height:calc(100vh - 90px);overflow-y:auto}
-.lib-hdr{padding:12px 14px;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--g);text-transform:uppercase;border-bottom:1px solid rgba(201,168,76,.18);background:var(--n2);position:sticky;top:0;z-index:5}
-.lib-cat{padding:7px 14px 3px;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gr);margin-top:2px}
-.lib-card{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:.12s;border-left:3px solid transparent}
-.lib-card:hover{background:rgba(201,168,76,.07);border-left-color:var(--g)}
-.lib-card.added{opacity:.4;cursor:default;border-left-color:var(--grn)}
-.lib-icon{font-size:16px;width:28px;text-align:center;flex-shrink:0}
-.lib-info{flex:1;min-width:0}
-.lib-name{font-size:11px;font-weight:600;color:var(--w)}
-.lib-desc{font-size:9px;color:var(--gr);margin-top:1px}
-.lib-add{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--g);background:none;color:var(--g);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;line-height:1}
-.lib-add:hover{background:var(--g);color:var(--n)}
-.dk-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.dk-ttl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--g)}
-.dk-cnt{background:var(--g);color:var(--n);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700}
-.empty-dk{background:var(--n2);border:2px dashed rgba(201,168,76,.22);border-radius:8px;padding:40px 20px;text-align:center;color:var(--gr);font-size:13px}
-.si{background:var(--n2);border:1px solid rgba(201,168,76,.18);border-radius:8px;margin-bottom:9px}
-.si-hdr{display:flex;align-items:center;gap:9px;padding:11px 14px;cursor:pointer;user-select:none}
-.si-hdr:hover{background:rgba(201,168,76,.04);border-radius:8px 8px 0 0}
-.si-num{width:22px;height:22px;border-radius:50%;background:var(--g);color:var(--n);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.si-name{flex:1;font-size:12px;font-weight:600}
-.si-acts{display:flex;align-items:center;gap:4px}
-.bi{width:26px;height:26px;border-radius:4px;border:1px solid rgba(255,255,255,.1);background:none;color:var(--gr);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:.12s}
-.bi:hover{border-color:var(--g);color:var(--g);background:var(--g3)}
-.bi.d:hover{border-color:var(--rd);color:var(--rd);background:rgba(231,76,60,.1)}
-.si-body{padding:14px 18px;border-top:1px solid rgba(201,168,76,.12);display:none}
-.si-body.open{display:block}
-.cs-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr);margin-bottom:7px;margin-top:14px}
-.cs{display:flex;gap:7px;flex-wrap:wrap}
-.co{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 10px;border:1.5px solid rgba(201,168,76,.2);border-radius:6px;cursor:pointer;transition:.12s;background:rgba(255,255,255,.02)}
-.co:hover,.co.sel{border-color:var(--g);background:var(--g3)}
-.co span{font-size:9px;color:var(--gr);white-space:nowrap}
-.co.sel span{color:var(--g)}
-.ct{width:100%;border-collapse:collapse;margin-top:8px;font-size:11px}
-.ct th{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gr);text-align:left;padding:5px 6px;border-bottom:1px solid rgba(201,168,76,.18)}
-.ct td{padding:3px 3px}
-.ct td input{padding:5px 7px;font-size:11px}
-.rm-row{background:none;border:none;color:var(--rd);cursor:pointer;font-size:15px;padding:2px 5px;opacity:.6}.rm-row:hover{opacity:1}
-.btn-add-row{background:none;border:1px dashed rgba(201,168,76,.3);color:var(--g);border-radius:4px;padding:6px 14px;cursor:pointer;font-size:11px;font-family:inherit;width:100%;margin-top:6px;transition:.12s}.btn-add-row:hover{background:var(--g3)}
-.ai-box{background:var(--n2);border:1px solid rgba(201,168,76,.18);border-radius:8px;padding:22px}
-.apikey-wrap{position:relative}
-.apikey-wrap input{padding-right:85px;font-family:monospace;font-size:11px}
-.apikey-save{position:absolute;right:7px;top:50%;transform:translateY(-50%);background:var(--g);color:var(--n);border:none;border-radius:4px;padding:4px 9px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit}
-.ai-out{background:var(--n3);border:1px solid rgba(201,168,76,.18);border-radius:6px;padding:14px;margin-top:14px;font-size:12px;color:var(--lg);min-height:80px;white-space:pre-wrap;display:none}
-.ai-out.show{display:block}
-.gen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px}
-.gen-card{background:var(--n2);border:1px solid rgba(201,168,76,.18);border-radius:6px;padding:12px;text-align:center}
-.gen-card .n{font-size:20px;font-weight:700;color:var(--g)}.gen-card .nm{font-size:10px;color:var(--gr);margin-top:3px}
-.btn-gen{width:100%;background:linear-gradient(135deg,var(--g),var(--g2));color:var(--n);border:none;border-radius:8px;padding:16px;font-size:14px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;transition:.2s}
-.btn-gen:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(201,168,76,.4)}
-.btn-gen:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.toast{position:fixed;bottom:22px;right:22px;background:var(--n2);border:1px solid var(--g);border-radius:7px;padding:12px 18px;font-size:12px;z-index:999;transform:translateY(80px);opacity:0;transition:.3s;pointer-events:none}
-.toast.show{transform:translateY(0);opacity:1}
-.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
-.info-note{background:rgba(201,168,76,.09);border:1px solid rgba(201,168,76,.25);border-radius:5px;padding:9px 12px;font-size:11px;color:var(--g2);margin-bottom:14px}
-.err-banner{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.35);border-radius:6px;padding:10px 14px;font-size:12px;color:#f1948a;margin-bottom:16px;display:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh}
+.app{max-width:980px;margin:0 auto;padding:24px 16px}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,#c9a84c,#e8c56d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.logo-text{font-size:1.35rem;font-weight:700;letter-spacing:-.5px}
+.logo-text span{color:#c9a84c}
+.logo-sub{font-size:.75rem;color:#8892b0;margin-top:1px}
+.err-banner{background:#3d1a1a;border:1px solid #7f1d1d;color:#fca5a5;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:.85rem;display:none}
+.tabs{display:flex;gap:4px;background:#161b22;border-radius:10px;padding:4px;margin-bottom:24px}
+.tab{flex:1;padding:9px 4px;border:none;background:none;color:#8892b0;font-size:.78rem;font-weight:600;border-radius:7px;cursor:pointer;transition:all .2s;text-align:center}
+.tab.active{background:#21262d;color:#e6edf3;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.tab:hover:not(.active){color:#c9a84c}
+.pane{display:none}.pane.active{display:block}
+.card{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px;margin-bottom:16px}
+.card-title{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#c9a84c;margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld label{font-size:.75rem;color:#8892b0;font-weight:500}
+.fld input,.fld select,.fld textarea{background:#0d1117;border:1px solid #30363d;border-radius:7px;padding:8px 10px;color:#e6edf3;font-size:.85rem;width:100%;outline:none;transition:border .2s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:#c9a84c}
+.fld select option{background:#161b22}
+.fld textarea{resize:vertical;min-height:60px}
+.btn{padding:10px 18px;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-gold{background:linear-gradient(135deg,#c9a84c,#e8c56d);color:#0a1628}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,.3)}
+.btn-outline{background:none;border:1px solid #30363d;color:#8892b0}
+.btn-outline:hover{border-color:#c9a84c;color:#c9a84c}
+.btn-sm{padding:6px 12px;font-size:.78rem}
+.btn-danger{background:#3d1a1a;border:1px solid #7f1d1d;color:#fca5a5}
+.btn-green{background:rgba(39,174,96,.15);border:1px solid #27ae60;color:#27ae60}
+.slide-palette{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:600px){.slide-palette{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}.tabs{flex-wrap:wrap}}
+.palette-btn{background:#0d1117;border:1px solid #21262d;border-radius:9px;padding:10px 8px;cursor:pointer;text-align:center;transition:all .2s;color:#e6edf3}
+.palette-btn:hover{border-color:#c9a84c;transform:translateY(-2px)}
+.palette-btn .p-icon{font-size:1.2rem;margin-bottom:4px}
+.palette-btn .p-name{font-size:.72rem;font-weight:600;line-height:1.2}
+.palette-btn .p-cat{font-size:.65rem;color:#8892b0;margin-top:2px}
+.slide-list{display:flex;flex-direction:column;gap:8px}
+.slide-item{background:#0d1117;border:1px solid #21262d;border-radius:10px;overflow:hidden}
+.slide-header{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none}
+.slide-header:hover{background:#161b22}
+.slide-num{width:22px;height:22px;background:#21262d;border-radius:5px;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;color:#c9a84c;flex-shrink:0}
+.slide-name{font-size:.83rem;font-weight:600;flex:1}
+.slide-type-tag{font-size:.68rem;color:#8892b0;background:#161b22;padding:2px 7px;border-radius:4px}
+.slide-chevron{color:#8892b0;transition:transform .2s;font-size:.9rem}
+.slide-chevron.open{transform:rotate(90deg)}
+.slide-body{padding:14px;border-top:1px solid #21262d;display:none}
+.slide-body.open{display:block}
+.chart-selector{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chart-btn{padding:5px 12px;border:1px solid #30363d;border-radius:6px;background:none;color:#8892b0;font-size:.75rem;cursor:pointer;transition:all .2s}
+.chart-btn.active{border-color:#c9a84c;color:#c9a84c;background:rgba(201,168,76,.08)}
+.row-table{width:100%;border-collapse:collapse;font-size:.78rem;margin-bottom:8px}
+.row-table th{color:#8892b0;padding:4px 8px;text-align:left;border-bottom:1px solid #21262d;font-weight:500}
+.row-table td{padding:4px 4px}
+.row-table td input{background:#161b22;border:1px solid #21262d;border-radius:5px;padding:4px 7px;color:#e6edf3;font-size:.78rem;width:100%}
+.row-table td input:focus{border-color:#c9a84c;outline:none}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+.badge-ai{background:rgba(201,168,76,.15);color:#c9a84c}
+.badge-live{background:rgba(39,174,96,.15);color:#27ae60}
+.ai-out{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:14px;font-size:.82rem;line-height:1.6;color:#c8d3e0;margin-top:10px;white-space:pre-wrap;min-height:60px}
+.research-result{background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:14px;margin-top:12px}
+.research-result h4{font-size:.82rem;font-weight:700;color:#c9a84c;margin-bottom:10px}
+.metric-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #21262d;font-size:.82rem}
+.metric-row:last-child{border-bottom:none}
+.metric-label{color:#8892b0}
+.metric-val{color:#e6edf3;font-weight:600}
+.metric-val.gold{color:#c9a84c}
+.comps-research-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.ticker-input-wrap{position:relative}
+.ticker-input-wrap input{text-transform:uppercase}
+.comp-card{background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:10px;font-size:.78rem}
+.comp-card .comp-name{font-weight:700;color:#e6edf3;margin-bottom:6px;font-size:.8rem}
+.comp-card .comp-ticker{color:#c9a84c;font-size:.72rem}
+.comp-metric{display:flex;justify-content:space-between;color:#8892b0;padding:2px 0}
+.comp-metric span:last-child{color:#e6edf3;font-weight:600}
+.comp-card.loading{opacity:.5}
+.comp-card.error{border-color:#7f1d1d}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.status-dot.green{background:#27ae60}
+.status-dot.yellow{background:#f59e0b}
+.status-dot.red{background:#e74c3c}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #30363d;border-top-color:#c9a84c;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.generate-box{text-align:center;padding:32px 20px}
+.gen-title{font-size:1.4rem;font-weight:700;margin-bottom:8px}
+.gen-sub{color:#8892b0;font-size:.85rem;margin-bottom:28px;line-height:1.5}
+.slide-count-badge{display:inline-flex;align-items:center;gap:6px;background:#21262d;padding:8px 16px;border-radius:20px;font-size:.82rem;margin-bottom:20px}
+.slide-count-badge span{color:#c9a84c;font-weight:700}
+.toast{position:fixed;bottom:24px;right:24px;background:#21262d;border:1px solid #30363d;border-radius:10px;padding:12px 18px;font-size:.83rem;z-index:999;animation:slideIn .3s;max-width:320px}
+@keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.saved-deals{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.saved-deal-btn{background:#0d1117;border:1px solid #21262d;border-radius:7px;padding:8px 12px;color:#e6edf3;font-size:.8rem;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center}
+.saved-deal-btn:hover{border-color:#c9a84c}
+.hint{font-size:.73rem;color:#8892b0;margin-top:5px;line-height:1.4}
+h3{font-size:.9rem;font-weight:700;margin-bottom:10px;color:#e6edf3}
+.sep{height:1px;background:#21262d;margin:14px 0}
+.source-tag{font-size:.68rem;padding:2px 7px;border-radius:4px;background:#0d1117;border:1px solid #30363d;color:#8892b0;margin-left:6px}
 </style>
 </head>
 <body>
-
-<div class="hdr">
-  <div class="logo">DealDeck <span>Pro</span></div>
-  <div class="hdr-r">
-    <select class="deal-sel" id="dealSel" onchange="loadDealByName(this.value)">
-      <option value="">— New Deal —</option>
-    </select>
-    <button class="btn-s" onclick="saveDeal()">Save Deal</button>
-    <button class="btn-s" onclick="newDeal()">+ New</button>
+<div class="app">
+<div class="logo">
+  <div class="logo-icon">⚡</div>
+  <div>
+    <div class="logo-text">Deal<span>Deck</span> Pro</div>
+    <div class="logo-sub">M&A Pitch Book Generator — Real Data Edition</div>
   </div>
 </div>
+<div id="pptxErr" class="err-banner">⚠️ PptxGenJS failed to load — check your internet connection and refresh the page.</div>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('setup')">① Deal Setup</div>
-  <div class="tab" onclick="switchTab('builder')">② Build Deck</div>
-  <div class="tab" onclick="switchTab('ai')">③ AI Custom Slide</div>
-  <div class="tab" onclick="switchTab('generate')">④ Generate</div>
+  <button class="tab active" onclick="switchTab('setup')">① Deal Setup</button>
+  <button class="tab" onclick="switchTab('builder')">② Slide Builder</button>
+  <button class="tab" onclick="switchTab('research')">③ Research <span class="badge badge-live" style="font-size:.6rem;padding:1px 5px">LIVE</span></button>
+  <button class="tab" onclick="switchTab('ai')">④ AI Tools</button>
+  <button class="tab" onclick="switchTab('generate')">⑤ Generate</button>
 </div>
 
-<!-- TAB: SETUP -->
-<div id="tc-setup" class="tc active"><div class="con">
-  <div id="pptxErr" class="err-banner">⚠️ PptxGenJS failed to load — check your internet connection and refresh the page.</div>
+<!-- ═══════════════════════════════════════════════════════ SETUP ══ -->
+<div class="pane active" id="pane-setup">
   <div class="card">
-    <div class="st">Transaction Parties</div>
-    <div class="g2">
-      <div class="fr"><label>Acquirer / Buyer</label><input id="s-acq" placeholder="e.g. Summit Industrial Partners"/></div>
-      <div class="fr"><label>Target Company</label><input id="s-tgt" placeholder="e.g. Apex Manufacturing Group"/></div>
-    </div>
-    <div class="g3">
-      <div class="fr"><label>Deal Type</label><select id="s-dtype"><option>Strategic Acquisition</option><option>Merger of Equals</option><option>Leveraged Buyout (LBO)</option><option>Carve-out / Divestiture</option></select></div>
-      <div class="fr"><label>Industry / Sector</label><input id="s-ind" placeholder="e.g. Industrial Manufacturing"/></div>
-      <div class="fr"><label>Geography</label><input id="s-geo" placeholder="e.g. North America"/></div>
-    </div>
-    <div class="g2">
-      <div class="fr"><label>Bank / Advisor Name</label><input id="s-bank" placeholder="e.g. Lazard"/></div>
-      <div class="fr"><label>Advisor Role</label><select id="s-role"><option>Financial Advisor to the Acquirer</option><option>Financial Advisor to the Target</option><option>Financial Advisor to the Board</option></select></div>
+    <div class="card-title">Deal Parties</div>
+    <div class="grid2">
+      <div class="fld"><label>Acquirer Name</label><input id="s-acq" placeholder="e.g. Apollo Global Management"></div>
+      <div class="fld"><label>Target Name</label><input id="s-tgt" placeholder="e.g. Acme Corp"></div>
+      <div class="fld"><label>Deal Type</label>
+        <select id="s-dtype">
+          <option value="Strategic M&A">Strategic M&A</option>
+          <option value="LBO">LBO / Sponsor-Led</option>
+          <option value="Merger of Equals">Merger of Equals</option>
+          <option value="Carve-Out">Carve-Out / Divestiture</option>
+          <option value="SPAC">SPAC / De-SPAC</option>
+        </select>
+      </div>
+      <div class="fld"><label>Advisor / Bank</label><input id="s-bank" placeholder="e.g. Goldman Sachs"></div>
+      <div class="fld"><label>Advisor Role</label>
+        <select id="s-role">
+          <option value="Sell-Side Advisor to Target">Sell-Side Advisor to Target</option>
+          <option value="Buy-Side Advisor to Acquirer">Buy-Side Advisor to Acquirer</option>
+          <option value="Fairness Opinion Provider">Fairness Opinion Provider</option>
+        </select>
+      </div>
+      <div class="fld"><label>Industry Sector</label><input id="s-ind" placeholder="e.g. Technology / SaaS"></div>
+      <div class="fld"><label>Geography</label><input id="s-geo" placeholder="e.g. North America"></div>
+      <div class="fld"><label>Announcement Date</label><input id="s-ann" type="date"></div>
+      <div class="fld"><label>Expected Close</label><input id="s-close" type="date"></div>
     </div>
   </div>
   <div class="card">
-    <div class="st">Target LTM Financials ($M)</div>
-    <div class="g3">
-      <div class="fr"><label>Revenue</label><input type="number" id="s-rev" placeholder="850"/></div>
-      <div class="fr"><label>EBITDA</label><input type="number" id="s-ebitda" placeholder="178"/></div>
-      <div class="fr"><label>EBIT</label><input type="number" id="s-ebit" placeholder="135"/></div>
-    </div>
-    <div class="g3">
-      <div class="fr"><label>Net Income</label><input type="number" id="s-ni" placeholder="88"/></div>
-      <div class="fr"><label>Net Debt</label><input type="number" id="s-nd" placeholder="215"/></div>
-      <div class="fr"><label>Shares Outstanding (M)</label><input type="number" id="s-shr" placeholder="48"/></div>
+    <div class="card-title">Target Financials (LTM, $M) <span class="source-tag" id="fin-source">manual</span></div>
+    <div class="grid3">
+      <div class="fld"><label>Revenue</label><input id="s-rev" type="number" placeholder="1,200"></div>
+      <div class="fld"><label>EBITDA</label><input id="s-ebitda" type="number" placeholder="340"></div>
+      <div class="fld"><label>EBIT</label><input id="s-ebit" type="number" placeholder="280"></div>
+      <div class="fld"><label>Net Income</label><input id="s-ni" type="number" placeholder="195"></div>
+      <div class="fld"><label>Net Debt</label><input id="s-nd" type="number" placeholder="420"></div>
+      <div class="fld"><label>Shares Outstanding (M)</label><input id="s-shr" type="number" placeholder="85"></div>
     </div>
   </div>
   <div class="card">
-    <div class="st">Offer Terms</div>
-    <div class="g3">
-      <div class="fr"><label>Enterprise Value ($M)</label><input type="number" id="s-tev" placeholder="2136"/></div>
-      <div class="fr"><label>Offer Price Per Share ($)</label><input type="number" id="s-offer" placeholder="40.25"/></div>
-      <div class="fr"><label>Undisturbed Price ($)</label><input type="number" id="s-undist" placeholder="31.50"/></div>
-    </div>
-    <div class="g3">
-      <div class="fr"><label>52-Week High ($)</label><input type="number" id="s-52h" placeholder="36.80"/></div>
-      <div class="fr"><label>Consideration Type</label><select id="s-cons"><option>All Cash</option><option>All Stock</option><option>Cash &amp; Stock (50/50)</option><option>Cash &amp; Stock (70/30)</option></select></div>
-      <div class="fr"><label>Expected Synergies ($M)</label><input type="number" id="s-syn" placeholder="75"/></div>
-    </div>
-    <div class="g2">
-      <div class="fr"><label>Announcement Date</label><input type="date" id="s-ann"/></div>
-      <div class="fr"><label>Expected Close Date</label><input type="date" id="s-close"/></div>
+    <div class="card-title">Valuation & Offer</div>
+    <div class="grid3">
+      <div class="fld"><label>TEV ($M)</label><input id="s-tev" type="number" placeholder="4,250"></div>
+      <div class="fld"><label>Offer Price per Share ($)</label><input id="s-offer" type="number" placeholder="52.00"></div>
+      <div class="fld"><label>Undisturbed Share Price ($)</label><input id="s-undist" type="number" placeholder="41.50"></div>
+      <div class="fld"><label>52-Week High ($)</label><input id="s-52h" type="number" placeholder="48.75"></div>
+      <div class="fld"><label>Synergies ($M)</label><input id="s-syn" type="number" placeholder="85"></div>
+      <div class="fld"><label>Consideration Mix</label><input id="s-cons" placeholder="70% Cash / 30% Stock"></div>
     </div>
   </div>
   <div class="card">
-    <div class="st">Valuation Ranges — Football Field ($M)</div>
-    <div class="g3"><div class="fr"><label>DCF Low</label><input type="number" id="s-dcfl" placeholder="1900"/></div><div class="fr"><label>DCF High</label><input type="number" id="s-dcfh" placeholder="2400"/></div><div></div></div>
-    <div class="g3"><div class="fr"><label>Trading Comps Low</label><input type="number" id="s-tcl" placeholder="1750"/></div><div class="fr"><label>Trading Comps High</label><input type="number" id="s-tch" placeholder="2150"/></div><div></div></div>
-    <div class="g3"><div class="fr"><label>Precedent Tx Low</label><input type="number" id="s-ptl" placeholder="2050"/></div><div class="fr"><label>Precedent Tx High</label><input type="number" id="s-pth" placeholder="2500"/></div><div></div></div>
-    <div class="g3"><div class="fr"><label>LBO Low (optional)</label><input type="number" id="s-lbol" placeholder="1650"/></div><div class="fr"><label>LBO High (optional)</label><input type="number" id="s-lboh" placeholder="2000"/></div><div></div></div>
+    <div class="card-title">Football Field Ranges ($M TEV)</div>
+    <div class="grid3">
+      <div class="fld"><label>DCF Low</label><input id="s-dcfl" type="number" placeholder="3,800"></div>
+      <div class="fld"><label>DCF High</label><input id="s-dcfh" type="number" placeholder="4,600"></div>
+      <div class="fld"><label>Trading Comps Low</label><input id="s-tcl" type="number" placeholder="3,600"></div>
+      <div class="fld"><label>Trading Comps High</label><input id="s-tch" type="number" placeholder="4,400"></div>
+      <div class="fld"><label>Precedent Tx Low</label><input id="s-ptl" type="number" placeholder="4,000"></div>
+      <div class="fld"><label>Precedent Tx High</label><input id="s-pth" type="number" placeholder="4,800"></div>
+      <div class="fld"><label>LBO Low</label><input id="s-lbol" type="number" placeholder="3,400"></div>
+      <div class="fld"><label>LBO High</label><input id="s-lboh" type="number" placeholder="4,200"></div>
+    </div>
   </div>
-</div></div>
+  <div class="card">
+    <div class="card-title">Saved Deals</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="btn btn-gold btn-sm" onclick="saveDeal()">Save Current Deal</button>
+      <button class="btn btn-outline btn-sm" onclick="clearForm()">Clear Form</button>
+    </div>
+    <div class="saved-deals" id="saved-deals-list"></div>
+  </div>
+</div>
 
-<!-- TAB: BUILDER -->
-<div id="tc-builder" class="tc"><div class="con"><div class="bld">
-  <div class="lib">
-    <div class="lib-hdr">Slide Library — Click to Add</div>
-    <div id="libContent"></div>
-  </div>
-  <div>
-    <div class="dk-hdr">
-      <span class="dk-ttl">Your Deck</span>
-      <span class="dk-cnt" id="deckCount">0 slides</span>
-    </div>
-    <div id="deckPanel"><div class="empty-dk">← Pick slides from the library to build your deck</div></div>
-  </div>
-</div></div></div>
-
-<!-- TAB: AI -->
-<div id="tc-ai" class="tc"><div class="con">
-  <div class="ai-box">
-    <div class="st">Claude API Key</div>
-    <div class="info-note">Your key is saved only in your browser and sent directly to Anthropic. Get one free at <strong>console.anthropic.com</strong> — $5 credit covers ~200 uses.</div>
-    <div class="apikey-wrap">
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..."/>
-      <button class="apikey-save" onclick="saveApiKey()">Save</button>
-    </div>
-  </div>
-  <div class="ai-box mt12">
-    <div class="st">Generate a Custom Slide with AI</div>
-    <div class="fr">
-      <label>Describe what you want on the slide</label>
-      <textarea id="customPrompt" rows="4" placeholder="e.g. Show a before/after slide comparing Apex standalone margins vs. pro forma post-synergies&#10;&#10;e.g. Management team slide with CEO, CFO, COO and short bios&#10;&#10;e.g. Three strategic rationale pillars: scale, technology, synergies"></textarea>
-    </div>
-    <button class="btn-s" onclick="generateCustomSlide()" style="width:100%;padding:10px;font-size:12px">✨ Generate Slide with Claude</button>
-    <div class="ai-out" id="customOutput"></div>
-    <button class="btn-s mt12" id="addCustomBtn" style="display:none;width:100%;padding:10px" onclick="addCustomToDeck()">+ Add This Slide to Deck</button>
-  </div>
-  <div class="ai-box mt12">
-    <div class="st">AI Comps Suggestion</div>
-    <p style="font-size:12px;color:var(--gr);margin-bottom:12px">Add a "Trading Comps" slide to your deck first, then click below to auto-populate it with AI-suggested peers based on your target company and industry.</p>
-    <button class="btn-s" onclick="suggestComps()" style="width:100%;padding:10px;font-size:12px">🔍 Suggest Comparable Companies with AI</button>
-    <div class="ai-out" id="compsOutput"></div>
-  </div>
-</div></div>
-
-<!-- TAB: GENERATE -->
-<div id="tc-generate" class="tc"><div class="con">
+<!-- ═══════════════════════════════════════════════════ BUILDER ══ -->
+<div class="pane" id="pane-builder">
   <div class="card">
-    <div class="st">Deck Summary</div>
-    <div class="gen-grid" id="genSummary"></div>
-    <div id="noSlidesMsg" style="color:var(--gr);font-size:13px;text-align:center;padding:20px">No slides added yet — go to Build Deck to add slides.</div>
+    <div class="card-title">Add Slide</div>
+    <div class="slide-palette" id="slide-palette"></div>
   </div>
-  <button class="btn-gen" id="genBtn" onclick="generatePPT()">⬇ Generate &amp; Download Pitch Book</button>
-  <p style="text-align:center;font-size:11px;color:var(--gr);margin-top:10px">Runs entirely in your browser · No data leaves your computer · Instant .pptx download</p>
-</div></div>
+  <div class="card">
+    <div class="card-title">Slide Deck <span id="slide-count-label" style="color:#8892b0;font-weight:400;font-size:.75rem"></span></div>
+    <div class="slide-list" id="slide-list"><div style="color:#8892b0;font-size:.82rem;text-align:center;padding:24px 0">No slides yet — click a slide type above to add it.</div></div>
+  </div>
+</div>
 
-<div class="toast" id="toast"></div>
+<!-- ══════════════════════════════════════════════════ RESEARCH ══ -->
+<div class="pane" id="pane-research">
+  <div class="card">
+    <div class="card-title">Research Target Company <span class="badge badge-live">SEC EDGAR LIVE</span></div>
+    <p style="font-size:.82rem;color:#8892b0;margin-bottom:12px">Enter the target company's stock ticker to pull real financials directly from their SEC 10-K filing. Works for any US-listed public company. Private companies: enter data manually in Deal Setup.</p>
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+      <div class="fld" style="flex:0 0 160px"><label>Target Ticker Symbol</label><input id="r-target-ticker" placeholder="e.g. AAPL" style="text-transform:uppercase"></div>
+      <button class="btn btn-gold btn-sm" style="margin-bottom:1px" onclick="researchTarget()">Fetch Real Data</button>
+    </div>
+    <div id="r-target-status" style="margin-top:10px;font-size:.8rem;color:#8892b0"></div>
+    <div id="r-target-result" style="display:none" class="research-result">
+      <h4 id="r-target-name">—</h4>
+      <div class="grid2" style="gap:8px">
+        <div>
+          <div class="metric-row"><span class="metric-label">Revenue (LTM)</span><span class="metric-val gold" id="r-t-rev">—</span></div>
+          <div class="metric-row"><span class="metric-label">EBITDA (est.)</span><span class="metric-val gold" id="r-t-ebitda">—</span></div>
+          <div class="metric-row"><span class="metric-label">EBITDA Margin</span><span class="metric-val" id="r-t-margin">—</span></div>
+          <div class="metric-row"><span class="metric-label">Net Income</span><span class="metric-val" id="r-t-ni">—</span></div>
+          <div class="metric-row"><span class="metric-label">Fiscal Year End</span><span class="metric-val" id="r-t-fy">—</span></div>
+        </div>
+        <div>
+          <div class="metric-row"><span class="metric-label">Shares Outstanding</span><span class="metric-val" id="r-t-shr">—</span></div>
+          <div class="metric-row"><span class="metric-label">Stock Price</span><span class="metric-val gold" id="r-t-price">—</span></div>
+          <div class="metric-row"><span class="metric-label">Market Cap</span><span class="metric-val" id="r-t-mcap">—</span></div>
+          <div class="metric-row"><span class="metric-label">Net Debt (est.)</span><span class="metric-val" id="r-t-nd">—</span></div>
+          <div class="metric-row"><span class="metric-label">Enterprise Value</span><span class="metric-val gold" id="r-t-ev">—</span></div>
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-green btn-sm" onclick="autofillSetup()">↓ Auto-fill Deal Setup</button>
+        <span class="hint" style="margin-top:0;display:flex;align-items:center">Source: SEC EDGAR 10-K + Yahoo Finance (live)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Research Comparable Companies <span class="badge badge-live">SEC EDGAR LIVE</span></div>
+    <p style="font-size:.82rem;color:#8892b0;margin-bottom:12px">Enter up to 6 ticker symbols. DealDeck will pull real revenue, EBITDA, and market data for each, then calculate live trading multiples. Use the results to populate your Comps slide.</p>
+    <div class="comps-research-grid" id="comp-ticker-inputs">
+      <div class="fld ticker-input-wrap"><label>Comp 1</label><input class="comp-ticker-in" placeholder="e.g. MSFT" style="text-transform:uppercase"></div>
+      <div class="fld ticker-input-wrap"><label>Comp 2</label><input class="comp-ticker-in" placeholder="e.g. GOOGL" style="text-transform:uppercase"></div>
+      <div class="fld ticker-input-wrap"><label>Comp 3</label><input class="comp-ticker-in" placeholder="e.g. CRM" style="text-transform:uppercase"></div>
+      <div class="fld ticker-input-wrap"><label>Comp 4</label><input class="comp-ticker-in" placeholder="e.g. NOW" style="text-transform:uppercase"></div>
+      <div class="fld ticker-input-wrap"><label>Comp 5</label><input class="comp-ticker-in" placeholder="e.g. ADBE" style="text-transform:uppercase"></div>
+      <div class="fld ticker-input-wrap"><label>Comp 6</label><input class="comp-ticker-in" placeholder="optional"></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <button class="btn btn-gold btn-sm" onclick="researchComps()">Fetch Comps Data</button>
+      <button class="btn btn-outline btn-sm" onclick="clearCompCards()">Clear</button>
+    </div>
+    <div id="comp-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px"></div>
+    <div id="comp-research-actions" style="display:none">
+      <div class="sep"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-green btn-sm" onclick="populateCompsSlide()">↓ Populate Comps Slide</button>
+        <button class="btn btn-gold btn-sm" onclick="aiAnalyseComps()">✨ Claude: Analyse These Comps</button>
+      </div>
+      <div class="ai-out" id="ai-comps-analysis" style="display:none;margin-top:10px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ AI TOOLS ══ -->
+<div class="pane" id="pane-ai">
+  <div class="card">
+    <div class="card-title">Claude API Key</div>
+    <div class="fld"><label>API Key (stored locally, never sent to our servers)</label>
+      <input id="ai-key" type="password" placeholder="sk-ant-..." oninput="saveKey()">
+    </div>
+    <div class="hint">Get a key at console.anthropic.com → API Keys. Required for AI analysis features.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">AI Comps Suggester <span class="badge badge-ai">Claude</span></div>
+    <p style="font-size:.82rem;color:#8892b0;margin-bottom:12px">Don't know which tickers to use? Describe your deal and Claude will suggest comparable companies to research in the Research tab.</p>
+    <button class="btn btn-gold btn-sm" onclick="aiSuggestTickers()">Suggest Comparable Tickers</button>
+    <div class="ai-out" id="ai-comps-out" style="display:none"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Custom AI Slide Generator <span class="badge badge-ai">Claude</span></div>
+    <p style="font-size:.82rem;color:#8892b0;margin-bottom:12px">Describe a slide in plain English. Claude will write it in investment banking language.</p>
+    <div class="fld" style="margin-bottom:10px"><label>Describe the slide</label>
+      <textarea id="ai-slide-prompt" placeholder="e.g. A slide on operational synergies — cost reduction through headcount rationalisation and procurement savings, targeting $85M by Year 3"></textarea>
+    </div>
+    <button class="btn btn-gold btn-sm" onclick="aiSlide()">Generate Slide Content</button>
+    <div class="ai-out" id="ai-slide-out" style="display:none"></div>
+    <div id="ai-add-btn" style="display:none;margin-top:10px">
+      <button class="btn btn-outline btn-sm" onclick="addAiSlide()">Add to Deck →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ GENERATE ══ -->
+<div class="pane" id="pane-generate">
+  <div class="generate-box">
+    <div class="gen-title">Ready to Generate</div>
+    <div class="gen-sub">Review your setup and slide deck, then generate your pitch book as a downloadable PowerPoint file. All data stays in your browser — nothing is sent to any server.</div>
+    <div class="slide-count-badge">Slides in deck: <span id="gen-count">0</span></div>
+    <br>
+    <button class="btn btn-gold" style="font-size:1rem;padding:14px 36px" onclick="generatePPT()">⚡ Generate Pitch Book (.pptx)</button>
+    <p class="hint" style="margin-top:16px;text-align:center">File downloads instantly. Works offline once the page is loaded.</p>
+  </div>
+</div>
+</div><!-- /app -->
 
 <script>
-// ── SLIDE LIBRARY ──────────────────────────────────────────────────────────
-const SLIDE_TYPES=[
-  {id:'cover',      name:'Transaction Overview',   cat:'Transaction', icon:'📋', desc:'Cover with key deal terms',        chart:[]},
-  {id:'exec_sum',   name:'Executive Summary',      cat:'Transaction', icon:'⭐', desc:'Key highlights at a glance',       chart:[]},
-  {id:'rationale',  name:'Deal Rationale',         cat:'Transaction', icon:'🎯', desc:'Strategic fit — 3 key points',     chart:[]},
-  {id:'highlights', name:'Key Inv. Highlights',   cat:'Transaction', icon:'💡', desc:'Top 5 reasons to transact',        chart:[]},
-  {id:'hist_fin',   name:'Historical Financials',  cat:'Financial',   icon:'📊', desc:'Revenue & EBITDA history',         chart:['Bar','Line','Combo']},
-  {id:'proj',       name:'Financial Projections',  cat:'Financial',   icon:'📈', desc:'Forward revenue & EBITDA',         chart:['Bar','Line']},
-  {id:'deal_str',   name:'Deal Structure',         cat:'Financial',   icon:'🏗', desc:'Consideration & financing mix',    chart:['Pie','Table']},
-  {id:'comps',      name:'Trading Comps',          cat:'Valuation',   icon:'🔍', desc:'Comparable company multiples',     chart:['Table','Bar']},
-  {id:'prec_tx',    name:'Precedent Transactions', cat:'Valuation',   icon:'📑', desc:'Historical M&A deal multiples',   chart:[]},
-  {id:'ff',         name:'Football Field',         cat:'Valuation',   icon:'🏈', desc:'Valuation range summary',          chart:[]},
-  {id:'synergies',  name:'Synergy Analysis',       cat:'Valuation',   icon:'⚡', desc:'Cost & revenue synergies',         chart:['Waterfall','Table']},
-  {id:'lbo',        name:'LBO Returns',            cat:'Valuation',   icon:'💰', desc:'IRR & MoM return scenarios',       chart:[]},
-  {id:'timeline',   name:'Indicative Timeline',    cat:'Process',     icon:'📅', desc:'Signing to close milestones',      chart:[]},
-  {id:'risks',      name:'Risk Factors',           cat:'Process',     icon:'⚠️', desc:'Key risks & mitigants',            chart:[]},
-  {id:'custom',     name:'Custom AI Slide',        cat:'AI-Powered',  icon:'✨', desc:'Generated from your description', chart:[]},
-];
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function v(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+function nv(id){const n=parseFloat(v(id));return isNaN(n)?null:n;}
+function fmt(n,dp=1){if(n==null||isNaN(n))return'—';return n.toLocaleString('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp});}
+function fmtM(n){if(n==null)return'—';return'$'+fmt(n,0)+'M';}
+function fmtB(n){if(n==null)return'—';if(Math.abs(n)>=1000)return'$'+fmt(n/1000,2)+'B';return fmtM(n);}
+function showToast(msg,dur=3500){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),dur);}
+function setEl(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+function spin(id,msg){const el=document.getElementById(id);if(el)el.innerHTML=`<span class="spinner"></span>${msg}`;}
 
-// ── STATE ──────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
 let slides=[];
+let uid=0;
 let customSlideData=null;
 let apiKey=localStorage.getItem('dd_ak')||'';
+let researchedTarget=null;   // last fetched target data object
+let researchedComps=[];      // array of comp data objects
 
-function uid(){return Math.random().toString(36).slice(2,8);}
-function v(id){return document.getElementById(id)?.value?.trim()||'';}
-function nv(id){return parseFloat(document.getElementById(id)?.value)||0;}
-function fmt(n){return n?'$'+Number(n).toLocaleString()+'M':'—';}
-function fmtD(s){if(!s)return'TBD';const d=new Date(s+'T12:00');return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}
-
-// ── GLOBAL DEAL DATA ───────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// DEAL DATA READER
+// ─────────────────────────────────────────────────────────────────────────────
 function G(){
   return{
     acq:v('s-acq')||'Acquirer',tgt:v('s-tgt')||'Target',
@@ -270,635 +360,1228 @@ function G(){
   };
 }
 
-// ── TABS ───────────────────────────────────────────────────────────────────
-function switchTab(id){
-  document.querySelectorAll('.tc').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
-  document.getElementById('tc-'+id).classList.add('active');
-  const map={setup:0,builder:1,ai:2,generate:3};
-  document.querySelectorAll('.tab')[map[id]]?.classList.add('active');
-  if(id==='generate')renderGenSummary();
+// ─────────────────────────────────────────────────────────────────────────────
+// SLIDE TYPE DEFINITIONS
+// ─────────────────────────────────────────────────────────────────────────────
+const SLIDE_TYPES=[
+  {id:'cover',    name:'Transaction Overview', cat:'Transaction',icon:'📋',chart:[]},
+  {id:'exec_sum', name:'Executive Summary',    cat:'Transaction',icon:'⭐',chart:[]},
+  {id:'rationale',name:'Deal Rationale',       cat:'Transaction',icon:'🎯',chart:[]},
+  {id:'highlights',name:'Key Inv. Highlights', cat:'Transaction',icon:'💡',chart:[]},
+  {id:'hist_fin', name:'Historical Financials',cat:'Financial',  icon:'📊',chart:['Bar','Line']},
+  {id:'proj',     name:'Financial Projections',cat:'Financial',  icon:'📈',chart:['Bar','Line']},
+  {id:'deal_str', name:'Deal Structure',       cat:'Financial',  icon:'🏗',chart:['Pie','Table']},
+  {id:'comps',    name:'Trading Comps',        cat:'Valuation',  icon:'🔍',chart:['Table','Bar']},
+  {id:'prec_tx',  name:'Precedent Transactions',cat:'Valuation', icon:'📑',chart:[]},
+  {id:'ff',       name:'Football Field',       cat:'Valuation',  icon:'🏈',chart:[]},
+  {id:'synergies',name:'Synergy Analysis',     cat:'Valuation',  icon:'⚡',chart:['Bar','Table']},
+  {id:'lbo',      name:'LBO Returns',          cat:'Valuation',  icon:'💰',chart:[]},
+  {id:'timeline', name:'Indicative Timeline',  cat:'Process',    icon:'📅',chart:[]},
+  {id:'risks',    name:'Risk Factors',         cat:'Process',    icon:'⚠️',chart:[]},
+  {id:'custom',   name:'Custom AI Slide',      cat:'AI-Powered', icon:'✨',chart:[]},
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DEFAULT ROW DATA
+// ─────────────────────────────────────────────────────────────────────────────
+function defaultRows(typeId){
+  if(typeId==='comps')return[
+    {co:'Company A',ev_rev:'2.8x',ev_ebitda:'12.4x',pe:'22.1x',rev_g:'8%', margin:'22%'},
+    {co:'Company B',ev_rev:'3.1x',ev_ebitda:'14.2x',pe:'25.3x',rev_g:'11%',margin:'22%'},
+    {co:'Company C',ev_rev:'2.4x',ev_ebitda:'11.8x',pe:'19.8x',rev_g:'6%', margin:'20%'},
+    {co:'Company D',ev_rev:'3.5x',ev_ebitda:'15.6x',pe:'28.1x',rev_g:'14%',margin:'23%'},
+    {co:'Company E',ev_rev:'2.6x',ev_ebitda:'12.9x',pe:'21.4x',rev_g:'9%', margin:'21%'},
+    {co:'Median',   ev_rev:'2.8x',ev_ebitda:'13.3x',pe:'22.7x',rev_g:'9%', margin:'22%'},
+  ];
+  if(typeId==='prec_tx')return[
+    {date:'Dec-2024',buyer:'Acquirer 1',target:'Target A',ev:'3,400',ev_ebitda:'14.2x',prem:'28%'},
+    {date:'Aug-2024',buyer:'Acquirer 2',target:'Target B',ev:'1,850',ev_ebitda:'13.6x',prem:'32%'},
+    {date:'Mar-2024',buyer:'Acquirer 3',target:'Target C',ev:'5,200',ev_ebitda:'15.1x',prem:'24%'},
+    {date:'Oct-2023',buyer:'Acquirer 4',target:'Target D',ev:'2,700',ev_ebitda:'12.8x',prem:'35%'},
+  ];
+  if(typeId==='hist_fin')return[
+    {yr:'FY2021',rev:'820', ebitda:'195',margin:'23.8%'},
+    {yr:'FY2022',rev:'960', ebitda:'240',margin:'25.0%'},
+    {yr:'FY2023',rev:'1,080',ebitda:'295',margin:'27.3%'},
+    {yr:'FY2024E',rev:'1,200',ebitda:'340',margin:'28.3%'},
+  ];
+  if(typeId==='proj')return[
+    {yr:'FY2025E',rev:'1,340',ebitda:'390',margin:'29.1%'},
+    {yr:'FY2026E',rev:'1,510',ebitda:'455',margin:'30.1%'},
+    {yr:'FY2027E',rev:'1,700',ebitda:'535',margin:'31.5%'},
+  ];
+  if(typeId==='rationale')return[
+    {title:'Market Leadership',body:'Combined entity becomes #1 player in the sector with 35%+ market share and a defensible competitive moat.'},
+    {title:'Revenue Synergies',body:'Cross-sell opportunities across complementary product lines expected to generate $85M+ in incremental revenue by Year 3.'},
+    {title:'Operational Scale',body:'Combined procurement, G&A, and technology infrastructure generates $45M in annual cost savings, boosting EBITDA margins by ~300bps.'},
+  ];
+  if(typeId==='highlights')return[
+    {title:'#1 Market Position',body:'Target holds the leading market share in its core segment with 30+ years of brand equity and high switching costs.'},
+    {title:'Attractive Growth Profile',body:'Revenue CAGR of 10%+ over the past 3 years with a clear path to sustained double-digit growth driven by secular tailwinds.'},
+    {title:'High-Quality, Recurring Revenue',body:'~65% of revenue is recurring or contracted, providing significant earnings visibility and cash flow predictability.'},
+    {title:'Meaningful Synergy Potential',body:'Management has identified $85M+ in cost and revenue synergies, representing a ~20% uplift to standalone EBITDA by Year 3.'},
+    {title:'Experienced Management Team',body:'Deep leadership bench with proven M&A integration experience and a track record of value creation for shareholders.'},
+  ];
+  if(typeId==='risks')return[
+    {risk:'Integration Execution Risk',mitigant:'Dedicated integration management office (IMO) with experienced leadership and 100-day plan already in place.'},
+    {risk:'Regulatory / Antitrust Risk',mitigant:'Combined share below 40% in all markets; pre-filing discussions with DOJ suggest limited remedies required.'},
+    {risk:'Key Personnel Retention',mitigant:'Retention packages for top 50 employees; culture alignment confirmed through employee surveys and management interviews.'},
+    {risk:'Leverage / Balance Sheet Risk',mitigant:'Strong post-close FCF of ~$300M+ per annum provides rapid deleveraging; expected to reach target leverage by Year 2.'},
+    {risk:'Customer Concentration',mitigant:'Top 10 customers represent <25% of revenue; long-term contracts in place with all major accounts.'},
+  ];
+  if(typeId==='synergies')return[
+    {cat:'Cost Synergies',yr1:'25',yr2:'55',yr3:'75',type:'G&A / Headcount'},
+    {cat:'Procurement',  yr1:'10',yr2:'18',yr3:'22',type:'Supply chain'},
+    {cat:'Revenue Syns', yr1:'5', yr2:'20',yr3:'40',type:'Cross-sell'},
+    {cat:'Total',        yr1:'40',yr2:'93',yr3:'137',type:''},
+  ];
+  return[];
 }
 
-// ── LIBRARY ────────────────────────────────────────────────────────────────
-function renderLibrary(){
-  const cats=[...new Set(SLIDE_TYPES.map(s=>s.cat))];
-  const added=slides.map(s=>s.typeId);
-  let h='';
-  cats.forEach(cat=>{
-    h+=`<div class="lib-cat">${cat}</div>`;
-    SLIDE_TYPES.filter(s=>s.cat===cat).forEach(s=>{
-      const isAdded=added.includes(s.id)&&s.id!=='custom';
-      h+=`<div class="lib-card${isAdded?' added':''}" onclick="${isAdded?'':'addSlide(\''+s.id+'\')'}" >
-        <div class="lib-icon">${s.icon}</div>
-        <div class="lib-info"><div class="lib-name">${s.name}</div><div class="lib-desc">${s.desc}</div></div>
-        ${isAdded?'<span style="color:var(--grn);font-size:11px">✓</span>':`<button class="lib-add" onclick="event.stopPropagation();addSlide('${s.id}')">+</button>`}
-      </div>`;
-    });
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER PALETTE
+// ─────────────────────────────────────────────────────────────────────────────
+function renderPalette(){
+  const pal=document.getElementById('slide-palette');
+  pal.innerHTML='';
+  SLIDE_TYPES.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='palette-btn';
+    b.innerHTML=`<div class="p-icon">${t.icon}</div><div class="p-name">${t.name}</div><div class="p-cat">${t.cat}</div>`;
+    b.onclick=()=>addSlide(t.id);
+    pal.appendChild(b);
   });
-  document.getElementById('libContent').innerHTML=h;
 }
 
-// ── DECK MANAGEMENT ────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// SLIDE MANAGEMENT
+// ─────────────────────────────────────────────────────────────────────────────
 function addSlide(typeId){
-  const t=SLIDE_TYPES.find(s=>s.id===typeId);if(!t)return;
-  const sl={uid:uid(),typeId,chartType:t.chart[0]||'',open:true,name:t.name};
-  if(typeId==='rationale')sl.pts=['','',''];
-  if(typeId==='highlights')sl.pts=['','','','',''];
-  if(typeId==='exec_sum'){sl.intro='';sl.bullets=['','','',''];}
-  if(typeId==='hist_fin')sl.yrs=[{l:'FY2022',r:'',e:''},{l:'FY2023',r:'',e:''},{l:'FY2024',r:'',e:''}];
-  if(typeId==='proj')sl.yrs=[{l:'FY2025E',r:'',e:''},{l:'FY2026E',r:'',e:''},{l:'FY2027E',r:'',e:''}];
-  if(typeId==='comps')sl.rows=[{n:'',er:'',ee:'',pe:'',r:''},{n:'',er:'',ee:'',pe:'',r:''},{n:'',er:'',ee:'',pe:'',r:''}];
-  if(typeId==='prec_tx')sl.rows=[{target:'',acq:'',date:'',ev:'',er:'',ee:'',prem:''}];
-  if(typeId==='synergies'){sl.cost=[{label:'Procurement',val:''},{label:'Headcount',val:''},{label:'IT & Systems',val:''}];sl.rev=[{label:'Cross-sell',val:''}];}
-  if(typeId==='lbo'){sl.entry='';sl.exit='';sl.hold='5';sl.debt='';sl.equity='';}
-  if(typeId==='deal_str'){sl.cashPct='';sl.stockPct='';sl.debtAmt='';sl.equityAmt='';}
-  if(typeId==='risks')sl.rows=[{risk:'',mit:'',sev:'High'},{risk:'',mit:'',sev:'Medium'}];
-  if(typeId==='custom')sl.customData=customSlideData;
-  slides.push(sl);
-  renderLibrary();renderDeck();
-  showToast(t.name+' added');
+  const t=SLIDE_TYPES.find(x=>x.id===typeId);
+  slides.push({uid:uid++,typeId,chartType:t.chart[0]||'',open:false,name:t.name,rows:[...defaultRows(typeId)]});
+  renderSlides();switchTab('builder');showToast(`Added: ${t.name}`);
 }
+function removeSlide(u){slides=slides.filter(s=>s.uid!==u);renderSlides();}
+function toggleSlide(u){const s=slides.find(x=>x.uid===u);if(s)s.open=!s.open;renderSlides();}
+function setChart(u,ct){const s=slides.find(x=>x.uid===u);if(s){s.chartType=ct;renderSlides();}}
+function updRow(u,ri,field,val){const s=slides.find(x=>x.uid===u);if(s&&s.rows[ri])s.rows[ri][field]=val;}
+function addRow(u,template){const s=slides.find(x=>x.uid===u);if(s){s.rows.push({...template});renderSlides();}}
+function delRow(u,ri){const s=slides.find(x=>x.uid===u);if(s){s.rows.splice(ri,1);renderSlides();}}
 
-function removeSlide(uid){slides=slides.filter(s=>s.uid!==uid);renderLibrary();renderDeck();}
-function moveSlide(uid,dir){
-  const i=slides.findIndex(s=>s.uid===uid);if(i<0)return;
-  const ni=i+dir;if(ni<0||ni>=slides.length)return;
-  [slides[i],slides[ni]]=[slides[ni],slides[i]];renderDeck();
-}
-function toggleSlide(uid){const s=slides.find(s=>s.uid===uid);if(s){s.open=!s.open;renderDeck();}}
-function selectChart(uid,ct){const s=slides.find(s=>s.uid===uid);if(s){s.chartType=ct;renderDeck();}}
-function updRow(uid,field,ri,key,val){const s=slides.find(s=>s.uid===uid);if(s&&s[field]&&s[field][ri])s[field][ri][key]=val;}
-function updPt(uid,field,i,val){const s=slides.find(s=>s.uid===uid);if(s&&s[field])s[field][i]=val;}
-function addRow(uid,field){
-  const s=slides.find(s=>s.uid===uid);if(!s||!s[field])return;
-  const tpl={};Object.keys(s[field][0]||{}).forEach(k=>tpl[k]='');
-  s[field].push(tpl);renderDeck();
-}
-function delRow(uid,field,ri){
-  const s=slides.find(s=>s.uid===uid);
-  if(s&&s[field]&&s[field].length>1){s[field].splice(ri,1);renderDeck();}
-}
-
-// ── DECK RENDER ────────────────────────────────────────────────────────────
-function renderDeck(){
-  const panel=document.getElementById('deckPanel');
-  document.getElementById('deckCount').textContent=slides.length+' slide'+(slides.length!==1?'s':'');
-  if(!slides.length){panel.innerHTML='<div class="empty-dk">← Pick slides from the library to build your deck</div>';return;}
-  panel.innerHTML=slides.map((sl,i)=>`
-    <div class="si">
-      <div class="si-hdr" onclick="toggleSlide('${sl.uid}')">
-        <div class="si-num">${i+1}</div>
-        <div class="si-name">${sl.name}</div>
-        <div class="si-acts" onclick="event.stopPropagation()">
-          ${i>0?`<button class="bi" onclick="moveSlide('${sl.uid}',-1)">↑</button>`:''}
-          ${i<slides.length-1?`<button class="bi" onclick="moveSlide('${sl.uid}',1)">↓</button>`:''}
-          <button class="bi d" onclick="removeSlide('${sl.uid}')">×</button>
-          <span style="color:var(--gr);font-size:16px;margin-left:2px">${sl.open?'▾':'▸'}</span>
-        </div>
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER SLIDE LIST
+// ─────────────────────────────────────────────────────────────────────────────
+function renderSlides(){
+  const list=document.getElementById('slide-list');
+  const cl=document.getElementById('slide-count-label');
+  const gc=document.getElementById('gen-count');
+  if(cl)cl.textContent=slides.length?`(${slides.length} slide${slides.length!==1?'s':''})`:'' ;
+  if(gc)gc.textContent=slides.length;
+  if(!slides.length){list.innerHTML='<div style="color:#8892b0;font-size:.82rem;text-align:center;padding:24px 0">No slides yet — click a type above to add it.</div>';return;}
+  list.innerHTML='';
+  slides.forEach((s,i)=>{
+    const t=SLIDE_TYPES.find(x=>x.id===s.typeId);
+    const div=document.createElement('div');div.className='slide-item';
+    div.innerHTML=`
+      <div class="slide-header" onclick="toggleSlide(${s.uid})">
+        <div class="slide-num">${i+1}</div>
+        <div class="slide-name">${t.icon} ${s.name}</div>
+        <div class="slide-type-tag">${t.cat}</div>
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removeSlide(${s.uid})" style="margin-left:8px">✕</button>
+        <div class="slide-chevron ${s.open?'open':''}">›</div>
       </div>
-      <div class="si-body${sl.open?' open':''}">
-        ${getSlideConfig(sl)}
-      </div>
-    </div>`).join('');
-}
-
-// ── CHART SELECTOR ─────────────────────────────────────────────────────────
-function chartSel(sl){
-  const t=SLIDE_TYPES.find(s=>s.id===sl.typeId);
-  if(!t||!t.chart.length)return'';
-  return`<div class="cs-lbl">Chart Type</div><div class="cs">${t.chart.map(c=>`
-    <div class="co${sl.chartType===c?' sel':''}" onclick="selectChart('${sl.uid}','${c}')">
-      ${chartIcon(c)}<span>${c}</span></div>`).join('')}</div>`;
-}
-function chartIcon(type){
-  const I={
-    Bar:`<svg width="38" height="26"><rect x="2" y="14" width="7" height="10" fill="#c9a84c" rx="1"/><rect x="11" y="8" width="7" height="16" fill="#c9a84c" rx="1"/><rect x="20" y="4" width="7" height="20" fill="#c9a84c" rx="1"/><rect x="29" y="11" width="7" height="13" fill="#c9a84c" rx="1"/></svg>`,
-    Line:`<svg width="38" height="26"><polyline points="2,22 10,15 20,8 30,12 38,5" fill="none" stroke="#c9a84c" stroke-width="2.5" stroke-linejoin="round"/></svg>`,
-    Combo:`<svg width="38" height="26"><rect x="2" y="14" width="7" height="10" fill="rgba(201,168,76,.4)" rx="1"/><rect x="11" y="8" width="7" height="16" fill="rgba(201,168,76,.4)" rx="1"/><rect x="20" y="4" width="7" height="20" fill="rgba(201,168,76,.4)" rx="1"/><polyline points="5.5,14 14.5,9 23.5,5 32.5,10" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linejoin="round"/></svg>`,
-    Waterfall:`<svg width="38" height="26"><rect x="2" y="10" width="7" height="14" fill="#27ae60" rx="1"/><rect x="11" y="6" width="7" height="8" fill="#27ae60" rx="1"/><rect x="20" y="12" width="7" height="6" fill="#e74c3c" rx="1"/><rect x="29" y="4" width="7" height="14" fill="#c9a84c" rx="1"/></svg>`,
-    Table:`<svg width="38" height="26"><rect x="1" y="1" width="36" height="24" fill="none" stroke="#c9a84c" stroke-width="1.5" rx="2"/><line x1="1" y1="9" x2="37" y2="9" stroke="#c9a84c" stroke-width="1"/><line x1="1" y1="17" x2="37" y2="17" stroke="#c9a84c" stroke-width="1"/><line x1="13" y1="9" x2="13" y2="25" stroke="#c9a84c" stroke-width="1"/><line x1="25" y1="9" x2="25" y2="25" stroke="#c9a84c" stroke-width="1"/></svg>`,
-    Pie:`<svg width="38" height="26"><circle cx="19" cy="13" r="11" fill="none" stroke="#c9a84c" stroke-width="8" stroke-dasharray="28 70"/><circle cx="19" cy="13" r="11" fill="none" stroke="#2e86ab" stroke-width="8" stroke-dasharray="22 70" stroke-dashoffset="-28"/><circle cx="19" cy="13" r="11" fill="none" stroke="#a23b72" stroke-width="8" stroke-dasharray="20 70" stroke-dashoffset="-50"/></svg>`,
-  };
-  return I[type]||'';
-}
-
-// ── DYNAMIC TABLE HELPER ───────────────────────────────────────────────────
-function dynTable(uid,field,cols,rows){
-  const sl=slides.find(s=>s.uid===uid);
-  const data=sl?sl[field]:rows;
-  const keys=Object.keys(data[0]||{});
-  return`<table class="ct"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th></th></tr></thead><tbody>`+
-    data.map((row,ri)=>`<tr>${keys.map(k=>`<td><input value="${row[k]||''}" oninput="updRow('${uid}','${field}',${ri},'${k}',this.value)"/></td>`).join('')}<td><button class="rm-row" onclick="delRow('${uid}','${field}',${ri})">×</button></td></tr>`).join('')+
-    `</tbody></table><button class="btn-add-row" onclick="addRow('${uid}','${field}')">+ Add Row</button>`;
-}
-
-// ── SLIDE CONFIG HTML ──────────────────────────────────────────────────────
-function getSlideConfig(sl){
-  switch(sl.typeId){
-    case 'cover':case 'ff':case 'timeline':
-      return`<p style="font-size:11px;color:var(--gr)">Pulls from Deal Setup data — no extra inputs needed.</p>`;
-    case 'exec_sum':
-      return`<div class="fr"><label>Opening Paragraph</label><textarea rows="3" placeholder="Briefly describe the transaction..." oninput="slides.find(s=>s.uid==='${sl.uid}').intro=this.value">${sl.intro||''}</textarea></div>
-      <label style="margin-bottom:5px">Key Bullets</label>
-      ${(sl.bullets||['','','','']).map((b,i)=>`<div class="fr"><input placeholder="Key point ${i+1}..." value="${b}" oninput="updPt('${sl.uid}','bullets',${i},this.value)"/></div>`).join('')}`;
-    case 'rationale':
-      return`${(sl.pts||['','']).map((p,i)=>`<div class="fr"><label>Strategic Point ${i+1}</label><input placeholder="e.g. Accelerates entry into high-growth APAC markets..." value="${p}" oninput="updPt('${sl.uid}','pts',${i},this.value)"/></div>`).join('')}
-      <div class="fr"><label>Synergy Commentary (optional)</label><input id="sd-${sl.uid}-syncom" placeholder="e.g. $75M+ in identified cost and revenue synergies"/></div>`;
-    case 'highlights':
-      return(sl.pts||['','','','','']).map((p,i)=>`<div class="fr"><label>Highlight ${i+1}</label><input placeholder="Key investment highlight..." value="${p}" oninput="updPt('${sl.uid}','pts',${i},this.value)"/></div>`).join('');
-    case 'hist_fin':
-      return`${chartSel(sl)}<div class="mt12"><label>Revenue / EBITDA ($M)</label>
-      ${(sl.yrs||[]).map((y,i)=>`<div class="g3 mt8">
-        <div><input value="${y.l}" placeholder="Year" oninput="slides.find(s=>s.uid==='${sl.uid}').yrs[${i}].l=this.value"/></div>
-        <div><input type="number" value="${y.r}" placeholder="Revenue" oninput="slides.find(s=>s.uid==='${sl.uid}').yrs[${i}].r=this.value"/></div>
-        <div><input type="number" value="${y.e}" placeholder="EBITDA" oninput="slides.find(s=>s.uid==='${sl.uid}').yrs[${i}].e=this.value"/></div>
-      </div>`).join('')}</div>`;
-    case 'proj':
-      return`${chartSel(sl)}<div class="mt12"><label>Revenue / EBITDA projections ($M)</label>
-      ${(sl.yrs||[]).map((y,i)=>`<div class="g3 mt8">
-        <div><input value="${y.l}" placeholder="Year" oninput="slides.find(s=>s.uid==='${sl.uid}').yrs[${i}].l=this.value"/></div>
-        <div><input type="number" value="${y.r}" placeholder="Revenue" oninput="slides.find(s=>s.uid==='${sl.uid}').yrs[${i}].r=this.value"/></div>
-        <div><input type="number" value="${y.e}" placeholder="EBITDA" oninput="slides.find(s=>s.uid==='${sl.uid}').yrs[${i}].e=this.value"/></div>
-      </div>`).join('')}</div>`;
-    case 'comps':
-      return`${chartSel(sl)}<div class="mt12">${dynTable(sl.uid,'rows',['Company','EV/Rev','EV/EBITDA','P/E','Revenue $M'],sl.rows)}</div>
-      <button class="btn-s mt8" onclick="suggestCompsForSlide('${sl.uid}')" style="width:100%">✨ Suggest comps with AI</button>`;
-    case 'prec_tx':
-      return dynTable(sl.uid,'rows',['Target','Acquirer','Date','EV $M','EV/Rev','EV/EBITDA','Premium'],sl.rows);
-    case 'synergies':
-      return`${chartSel(sl)}<div class="mt12"><label>Cost Synergies ($M)</label>${dynTable(sl.uid,'cost',['Category','Value $M'],sl.cost)}</div>
-      <div class="mt12"><label>Revenue Synergies ($M)</label>${dynTable(sl.uid,'rev',['Category','Value $M'],sl.rev)}</div>`;
-    case 'lbo':
-      return`<div class="g2">
-        <div class="fr"><label>Entry EV/EBITDA</label><input type="number" value="${sl.entry}" placeholder="12.0" oninput="slides.find(s=>s.uid==='${sl.uid}').entry=this.value"/></div>
-        <div class="fr"><label>Exit EV/EBITDA</label><input type="number" value="${sl.exit}" placeholder="13.5" oninput="slides.find(s=>s.uid==='${sl.uid}').exit=this.value"/></div>
-      </div><div class="g2">
-        <div class="fr"><label>Hold Period (yrs)</label><input type="number" value="${sl.hold||5}" oninput="slides.find(s=>s.uid==='${sl.uid}').hold=this.value"/></div>
-        <div class="fr"><label>Leverage (Debt/EBITDA x)</label><input type="number" value="${sl.debt}" placeholder="5.5" oninput="slides.find(s=>s.uid==='${sl.uid}').debt=this.value"/></div>
-      </div>
-      <div class="fr"><label>Equity Contribution ($M)</label><input type="number" value="${sl.equity}" placeholder="1151" oninput="slides.find(s=>s.uid==='${sl.uid}').equity=this.value"/></div>`;
-    case 'deal_str':
-      return`${chartSel(sl)}<div class="g2 mt12">
-        <div class="fr"><label>Cash Consideration (%)</label><input type="number" placeholder="70" oninput="slides.find(s=>s.uid==='${sl.uid}').cashPct=this.value"/></div>
-        <div class="fr"><label>Stock Consideration (%)</label><input type="number" placeholder="30" oninput="slides.find(s=>s.uid==='${sl.uid}').stockPct=this.value"/></div>
-      </div><div class="g2">
-        <div class="fr"><label>Debt Financing ($M)</label><input type="number" oninput="slides.find(s=>s.uid==='${sl.uid}').debtAmt=this.value"/></div>
-        <div class="fr"><label>Equity Financing ($M)</label><input type="number" oninput="slides.find(s=>s.uid==='${sl.uid}').equityAmt=this.value"/></div>
+      <div class="slide-body ${s.open?'open':''}">
+        ${renderSlideBody(s,t)}
       </div>`;
-    case 'risks':
-      return dynTable(sl.uid,'rows',['Risk Factor','Mitigant','Severity'],sl.rows);
-    case 'custom':
-      return`<p style="font-size:11px;color:var(--gr)">${sl.customData?'AI-generated slide ready.':'Go to the AI Custom Slide tab to generate a slide first, then click Add to Deck.'}</p>`;
-    default:return'';
+    list.appendChild(div);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER SLIDE BODY (editor UI per slide type)
+// ─────────────────────────────────────────────────────────────────────────────
+function renderSlideBody(s,t){
+  let h='';
+  if(t.chart.length){
+    h+=`<div class="card-title" style="margin-bottom:8px">Chart Type</div><div class="chart-selector">`;
+    t.chart.forEach(c=>{h+=`<button class="chart-btn ${s.chartType===c?'active':''}" onclick="setChart(${s.uid},'${c}')">${c}</button>`;});
+    h+=`</div>`;
   }
+  if(s.typeId==='comps'){
+    h+=`<h3>Comparable Companies</h3><table class="row-table"><thead><tr><th>Company</th><th>EV/Rev</th><th>EV/EBITDA</th><th>P/E</th><th>Rev Growth</th><th>EBITDA Mgn</th><th></th></tr></thead><tbody>`;
+    s.rows.forEach((r,ri)=>{
+      h+=`<tr><td><input value="${r.co}" oninput="updRow(${s.uid},${ri},'co',this.value)"></td>
+      <td><input value="${r.ev_rev}" oninput="updRow(${s.uid},${ri},'ev_rev',this.value)" style="width:58px"></td>
+      <td><input value="${r.ev_ebitda}" oninput="updRow(${s.uid},${ri},'ev_ebitda',this.value)" style="width:58px"></td>
+      <td><input value="${r.pe}" oninput="updRow(${s.uid},${ri},'pe',this.value)" style="width:54px"></td>
+      <td><input value="${r.rev_g}" oninput="updRow(${s.uid},${ri},'rev_g',this.value)" style="width:58px"></td>
+      <td><input value="${r.margin}" oninput="updRow(${s.uid},${ri},'margin',this.value)" style="width:58px"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delRow(${s.uid},${ri});renderSlides()">✕</button></td></tr>`;
+    });
+    h+=`</tbody></table><button class="btn btn-outline btn-sm" onclick="addRow(${s.uid},{co:'New Co',ev_rev:'—',ev_ebitda:'—',pe:'—',rev_g:'—',margin:'—'});renderSlides()">+ Add Row</button>`;
+  } else if(s.typeId==='prec_tx'){
+    h+=`<h3>Precedent Transactions</h3><table class="row-table"><thead><tr><th>Date</th><th>Buyer</th><th>Target</th><th>EV ($M)</th><th>EV/EBITDA</th><th>Premium</th><th></th></tr></thead><tbody>`;
+    s.rows.forEach((r,ri)=>{
+      h+=`<tr><td><input value="${r.date}" oninput="updRow(${s.uid},${ri},'date',this.value)" style="width:78px"></td>
+      <td><input value="${r.buyer}" oninput="updRow(${s.uid},${ri},'buyer',this.value)"></td>
+      <td><input value="${r.target}" oninput="updRow(${s.uid},${ri},'target',this.value)"></td>
+      <td><input value="${r.ev}" oninput="updRow(${s.uid},${ri},'ev',this.value)" style="width:68px"></td>
+      <td><input value="${r.ev_ebitda}" oninput="updRow(${s.uid},${ri},'ev_ebitda',this.value)" style="width:68px"></td>
+      <td><input value="${r.prem}" oninput="updRow(${s.uid},${ri},'prem',this.value)" style="width:58px"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delRow(${s.uid},${ri});renderSlides()">✕</button></td></tr>`;
+    });
+    h+=`</tbody></table><button class="btn btn-outline btn-sm" onclick="addRow(${s.uid},{date:'',buyer:'',target:'',ev:'',ev_ebitda:'',prem:''});renderSlides()">+ Add Row</button>`;
+  } else if(s.typeId==='hist_fin'||s.typeId==='proj'){
+    const label=s.typeId==='hist_fin'?'Historical Financials':'Financial Projections';
+    h+=`<h3>${label}</h3><table class="row-table"><thead><tr><th>Year</th><th>Revenue ($M)</th><th>EBITDA ($M)</th><th>EBITDA Margin</th><th></th></tr></thead><tbody>`;
+    s.rows.forEach((r,ri)=>{
+      h+=`<tr><td><input value="${r.yr}" oninput="updRow(${s.uid},${ri},'yr',this.value)" style="width:78px"></td>
+      <td><input value="${r.rev}" oninput="updRow(${s.uid},${ri},'rev',this.value)"></td>
+      <td><input value="${r.ebitda}" oninput="updRow(${s.uid},${ri},'ebitda',this.value)"></td>
+      <td><input value="${r.margin}" oninput="updRow(${s.uid},${ri},'margin',this.value)" style="width:78px"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delRow(${s.uid},${ri});renderSlides()">✕</button></td></tr>`;
+    });
+    h+=`</tbody></table><button class="btn btn-outline btn-sm" onclick="addRow(${s.uid},{yr:'FY202XE',rev:'',ebitda:'',margin:''});renderSlides()">+ Add Row</button>`;
+  } else if(s.typeId==='rationale'||s.typeId==='highlights'){
+    const label=s.typeId==='rationale'?'Rationale Points':'Investment Highlights';
+    h+=`<h3>${label}</h3>`;
+    s.rows.forEach((r,ri)=>{
+      h+=`<div style="background:#161b22;border:1px solid #21262d;border-radius:8px;padding:10px;margin-bottom:8px">
+        <div class="fld" style="margin-bottom:6px"><label>Title</label><input value="${r.title}" oninput="updRow(${s.uid},${ri},'title',this.value)"></div>
+        <div class="fld"><label>Detail</label><textarea oninput="updRow(${s.uid},${ri},'body',this.value)">${r.body}</textarea></div>
+        <button class="btn btn-danger btn-sm" style="margin-top:6px" onclick="delRow(${s.uid},${ri});renderSlides()">Remove</button></div>`;
+    });
+    h+=`<button class="btn btn-outline btn-sm" onclick="addRow(${s.uid},{title:'New Point',body:''});renderSlides()">+ Add</button>`;
+  } else if(s.typeId==='risks'){
+    h+=`<h3>Risk Factors</h3>`;
+    s.rows.forEach((r,ri)=>{
+      h+=`<div style="background:#161b22;border:1px solid #21262d;border-radius:8px;padding:10px;margin-bottom:8px">
+        <div class="fld" style="margin-bottom:6px"><label>Risk</label><input value="${r.risk}" oninput="updRow(${s.uid},${ri},'risk',this.value)"></div>
+        <div class="fld"><label>Mitigant</label><textarea oninput="updRow(${s.uid},${ri},'mitigant',this.value)">${r.mitigant}</textarea></div>
+        <button class="btn btn-danger btn-sm" style="margin-top:6px" onclick="delRow(${s.uid},${ri});renderSlides()">Remove</button></div>`;
+    });
+    h+=`<button class="btn btn-outline btn-sm" onclick="addRow(${s.uid},{risk:'New Risk',mitigant:''});renderSlides()">+ Add Risk</button>`;
+  } else if(s.typeId==='synergies'){
+    h+=`<h3>Synergy Breakdown</h3><table class="row-table"><thead><tr><th>Category</th><th>Yr 1 ($M)</th><th>Yr 2 ($M)</th><th>Yr 3 ($M)</th><th>Type</th><th></th></tr></thead><tbody>`;
+    s.rows.forEach((r,ri)=>{
+      h+=`<tr><td><input value="${r.cat}" oninput="updRow(${s.uid},${ri},'cat',this.value)"></td>
+      <td><input value="${r.yr1}" oninput="updRow(${s.uid},${ri},'yr1',this.value)" style="width:58px"></td>
+      <td><input value="${r.yr2}" oninput="updRow(${s.uid},${ri},'yr2',this.value)" style="width:58px"></td>
+      <td><input value="${r.yr3}" oninput="updRow(${s.uid},${ri},'yr3',this.value)" style="width:58px"></td>
+      <td><input value="${r.type}" oninput="updRow(${s.uid},${ri},'type',this.value)"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delRow(${s.uid},${ri});renderSlides()">✕</button></td></tr>`;
+    });
+    h+=`</tbody></table><button class="btn btn-outline btn-sm" onclick="addRow(${s.uid},{cat:'',yr1:'',yr2:'',yr3:'',type:''});renderSlides()">+ Add Row</button>`;
+  } else if(s.typeId==='exec_sum'){
+    if(!s.rows.length)s.rows=[{notes:''}];
+    h+=`<div class="hint" style="margin-bottom:8px">Auto-generates from Deal Setup data — fill that in and this slide populates itself.</div>
+    <div class="fld"><label>Additional Notes (optional)</label><textarea oninput="updRow(${s.uid},0,'notes',this.value)" placeholder="Any additional context...">${s.rows[0].notes||''}</textarea></div>`;
+  } else if(s.typeId==='lbo'){
+    if(!s.rows.length)s.rows=[{ev:'',lev:'6.5',exit:'12.0'}];
+    h+=`<h3>LBO Assumptions</h3><div class="grid3">
+      <div class="fld"><label>Entry EV ($M)</label><input value="${s.rows[0].ev||''}" oninput="updRow(${s.uid},0,'ev',this.value)" placeholder="4,250"></div>
+      <div class="fld"><label>Debt/EBITDA (x)</label><input value="${s.rows[0].lev||'6.5'}" oninput="updRow(${s.uid},0,'lev',this.value)"></div>
+      <div class="fld"><label>Exit Multiple (x)</label><input value="${s.rows[0].exit||'12.0'}" oninput="updRow(${s.uid},0,'exit',this.value)"></div></div>`;
+  } else if(s.typeId==='deal_str'){
+    if(!s.rows.length)s.rows=[{fin:''}];
+    h+=`<div class="hint" style="margin-bottom:8px">Consideration mix and structure pull from Deal Setup.</div>
+    <div class="fld"><label>Financing Detail</label><textarea oninput="updRow(${s.uid},0,'fin',this.value)" placeholder="e.g. $2.0Bn Term Loan B, $500M RCF, $1.75Bn Equity">${s.rows[0].fin||''}</textarea></div>`;
+  } else if(s.typeId==='cover'||s.typeId==='ff'||s.typeId==='timeline'){
+    h+=`<div class="hint">Auto-generates from Deal Setup data — no additional input needed here.</div>`;
+  } else if(s.typeId==='custom'){
+    h+=`<div class="hint">Content comes from AI Tools → Custom Slide Generator. Generate content there, then "Add to Deck".</div>`;
+    if(s.aiContent)h+=`<div class="ai-out" style="margin-top:8px;display:block">${s.aiContent}</div>`;
+  }
+  return h;
 }
 
-// ── GENERATE SUMMARY ───────────────────────────────────────────────────────
-function renderGenSummary(){
-  const grid=document.getElementById('genSummary');
-  const msg=document.getElementById('noSlidesMsg');
-  if(!slides.length){grid.innerHTML='';msg.style.display='block';return;}
-  msg.style.display='none';
-  grid.innerHTML=slides.map((sl,i)=>`<div class="gen-card"><div class="n">${i+1}</div><div class="nm">${sl.name}</div></div>`).join('');
+// ─────────────────────────────────────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────────────────────────────────────
+function switchTab(name){
+  const names=['setup','builder','research','ai','generate'];
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',names[i]===name));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+name));
 }
 
-// ── SAVE / LOAD ────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// SAVED DEALS
+// ─────────────────────────────────────────────────────────────────────────────
 function saveDeal(){
-  const name=v('s-tgt')||'Untitled Deal';
-  const all=JSON.parse(localStorage.getItem('dd_deals')||'[]');
-  const setup={};document.querySelectorAll('[id^="s-"]').forEach(el=>{setup[el.id]=el.value;});
-  const obj={name,ts:Date.now(),setup,slides};
-  const idx=all.findIndex(d=>d.name===name);
-  if(idx>=0)all[idx]=obj;else all.push(obj);
-  localStorage.setItem('dd_deals',JSON.stringify(all));
-  refreshDealSelector(name);showToast('Deal saved ✓');
+  const g=G();if(!g.tgt||g.tgt==='Target'){showToast('Enter a Target name first');return;}
+  let deals=JSON.parse(localStorage.getItem('dd_deals')||'[]');
+  const data={};document.querySelectorAll('[id^="s-"]').forEach(el=>data[el.id]=el.value);
+  data._slides=JSON.stringify(slides);
+  const idx=deals.findIndex(d=>d._tgt===g.tgt);
+  if(idx>=0)deals[idx]={_tgt:g.tgt,...data};else deals.push({_tgt:g.tgt,...data});
+  localStorage.setItem('dd_deals',JSON.stringify(deals));
+  renderSavedDeals();showToast(`Saved: ${g.tgt}`);
 }
-function refreshDealSelector(sel=''){
-  const all=JSON.parse(localStorage.getItem('dd_deals')||'[]');
-  const el=document.getElementById('dealSel');
-  el.innerHTML='<option value="">— New Deal —</option>'+all.map(d=>`<option value="${d.name}"${d.name===sel?' selected':''}>${d.name}</option>`).join('');
+function loadDeal(tgt){
+  const deals=JSON.parse(localStorage.getItem('dd_deals')||'[]');
+  const d=deals.find(x=>x._tgt===tgt);if(!d)return;
+  Object.keys(d).forEach(k=>{if(k.startsWith('s-')){const el=document.getElementById(k);if(el)el.value=d[k];}});
+  if(d._slides){try{slides=JSON.parse(d._slides);uid=slides.reduce((m,s)=>Math.max(m,s.uid+1),0);}catch(e){}}
+  renderSlides();showToast(`Loaded: ${tgt}`);
 }
-function loadDealByName(name){
-  if(!name)return newDeal();
-  const all=JSON.parse(localStorage.getItem('dd_deals')||'[]');
-  const deal=all.find(d=>d.name===name);if(!deal)return;
-  Object.entries(deal.setup||{}).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
-  slides=deal.slides||[];renderLibrary();renderDeck();showToast('Loaded: '+name);
+function renderSavedDeals(){
+  const deals=JSON.parse(localStorage.getItem('dd_deals')||'[]');
+  const el=document.getElementById('saved-deals-list');
+  el.innerHTML=deals.length?deals.map(d=>`<button class="saved-deal-btn" onclick="loadDeal('${d._tgt}')">${d._tgt}<span style="color:#8892b0;font-size:.72rem">click to load</span></button>`).join(''):'<span style="color:#8892b0;font-size:.8rem">No saved deals yet.</span>';
 }
-function newDeal(){
-  document.querySelectorAll('[id^="s-"]').forEach(el=>{if(el.tagName!=='SELECT')el.value='';});
-  slides=[];renderLibrary();renderDeck();document.getElementById('dealSel').value='';
-}
-
-// ── API KEY ────────────────────────────────────────────────────────────────
-function saveApiKey(){
-  apiKey=document.getElementById('apiKeyInput').value.trim();
-  localStorage.setItem('dd_ak',apiKey);showToast('API key saved ✓');
+function clearForm(){
+  document.querySelectorAll('[id^="s-"]').forEach(el=>{el.tagName==='SELECT'?el.selectedIndex=0:el.value='';});
+  slides=[];uid=0;renderSlides();showToast('Form cleared');
 }
 
-// ── CLAUDE API ─────────────────────────────────────────────────────────────
-async function callClaude(prompt,maxTokens=1024){
-  if(!apiKey){showToast('Enter your Claude API key in the AI tab first');throw new Error('No API key');}
+// ─────────────────────────────────────────────────────────────────────────────
+// CLAUDE API
+// ─────────────────────────────────────────────────────────────────────────────
+function saveKey(){apiKey=document.getElementById('ai-key').value.trim();localStorage.setItem('dd_ak',apiKey);}
+async function callClaude(prompt,maxTokens=1200){
+  if(!apiKey){showToast('Enter your Claude API key in the AI Tools tab first');throw new Error('No API key');}
   const r=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
     body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:maxTokens,messages:[{role:'user',content:prompt}]})
   });
   if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'API error');}
-  return(await r.json()).content[0].text;
+  return (await r.json()).content[0].text;
 }
-async function suggestComps(){
-  const g=G();const out=document.getElementById('compsOutput');
-  out.className='ai-out show';out.textContent='⏳ Asking Claude for comparable companies...';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEC EDGAR + YAHOO FINANCE — REAL DATA ENGINE
+// ─────────────────────────────────────────────────────────────────────────────
+let _allTickers=null;
+async function loadTickerMap(){
+  if(_allTickers)return _allTickers;
+  const r=await fetch('https://www.sec.gov/files/company_tickers.json');
+  _allTickers=await r.json();
+  return _allTickers;
+}
+async function getCIK(ticker){
+  const map=await loadTickerMap();
+  const entry=Object.values(map).find(e=>e.ticker.toUpperCase()===ticker.toUpperCase().trim());
+  if(!entry)throw new Error(`"${ticker}" not found in SEC database`);
+  return{cik:String(entry.cik_str).padStart(10,'0'),name:entry.title};
+}
+async function getCompanyFacts(cik){
+  const r=await fetch(`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`);
+  if(!r.ok)throw new Error('SEC EDGAR: no XBRL data for this company');
+  return r.json();
+}
+function extractAnnual(facts,concepts){
+  // Returns {val, date} for the most recent 12-month 10-K period
+  const usGaap=facts.facts?.['us-gaap']||{};
+  for(const c of concepts){
+    const item=usGaap[c];
+    if(!item?.units?.USD)continue;
+    const arr=item.units.USD;
+    const annual=arr.filter(d=>{
+      if(d.form!=='10-K')return false;
+      if(!d.start||!d.end)return false;
+      const days=(new Date(d.end)-new Date(d.start))/86400000;
+      return days>=340&&days<=390;
+    }).sort((a,b)=>b.end.localeCompare(a.end));
+    if(annual.length)return{val:annual[0].val,date:annual[0].end};
+    // Fallback: any 10-K entry
+    const any=arr.filter(d=>d.form==='10-K').sort((a,b)=>b.end.localeCompare(a.end));
+    if(any.length)return{val:any[0].val,date:any[0].end};
+  }
+  return null;
+}
+function extractInstant(facts,concepts){
+  const usGaap=facts.facts?.['us-gaap']||{};
+  for(const c of concepts){
+    const item=usGaap[c];
+    if(!item?.units?.USD)continue;
+    const arr=item.units.USD.filter(d=>d.form==='10-K'&&!d.start).sort((a,b)=>b.end.localeCompare(a.end));
+    if(arr.length)return arr[0].val;
+  }
+  return null;
+}
+function extractShares(facts){
+  const dei=facts.facts?.dei||{};
+  const item=dei['EntityCommonStockSharesOutstanding'];
+  if(item?.units?.shares){
+    const arr=item.units.shares.sort((a,b)=>b.end.localeCompare(a.end));
+    return arr[0]?.val||null;
+  }
+  return null;
+}
+async function getStockPrice(ticker){
+  // Try direct Yahoo Finance, then CORS proxy
+  const endpoints=[
+    `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`,
+    `https://query2.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`,
+    `https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d`,
+  ];
+  for(const url of endpoints){
+    try{
+      const r=await fetch(url,{headers:{'Accept':'application/json'}});
+      if(r.ok){
+        const d=await r.json();
+        const price=d.chart?.result?.[0]?.meta?.regularMarketPrice;
+        if(price)return price;
+      }
+    }catch(e){}
+  }
+  return null;
+}
+
+async function fetchCompanyData(ticker){
+  // Returns a standardised data object for one company
+  const{cik,name}=await getCIK(ticker);
+  const facts=await getCompanyFacts(cik);
+
+  const revData=extractAnnual(facts,['Revenues','RevenueFromContractWithCustomerExcludingAssessedTax','SalesRevenueNet','RevenueFromContractWithCustomerIncludingAssessedTax','RevenueFromContractWithCustomerNetOfRefundsAndReturns']);
+  const opIncData=extractAnnual(facts,['OperatingIncomeLoss']);
+  const daData=extractAnnual(facts,['DepreciationDepletionAndAmortization','DepreciationAndAmortization','Depreciation']);
+  const niData=extractAnnual(facts,['NetIncomeLoss','ProfitLoss']);
+  const cashVal=extractInstant(facts,['CashAndCashEquivalentsAtCarryingValue','CashCashEquivalentsAndShortTermInvestments','Cash']);
+  const debtVal=extractInstant(facts,['LongTermDebt','LongTermDebtAndCapitalLeaseObligations','LongTermDebtNoncurrent'])||0;
+  const shrVal=extractShares(facts);
+
+  const rev   =revData   ?revData.val/1e6   :null;
+  const opInc =opIncData ?opIncData.val/1e6 :null;
+  const da    =daData    ?daData.val/1e6    :null;
+  const ebitda=(opInc!=null&&da!=null)?opInc+da:null;
+  const ni    =niData    ?niData.val/1e6    :null;
+  const cash  =cashVal   ?cashVal/1e6       :0;
+  const debt  =debtVal/1e6;
+  const netDebt=debt-cash;
+  const sharesM=shrVal?shrVal/1e6:null;
+  const fy    =revData?.date||opIncData?.date||null;
+
+  const price=await getStockPrice(ticker);
+  const mktCap=(price&&sharesM)?price*sharesM:null;
+  const ev    =mktCap!=null?mktCap+netDebt:null;
+  const evRev =ev&&rev?ev/rev:null;
+  const evEbi =ev&&ebitda?ev/ebitda:null;
+  const pe    =mktCap&&ni&&ni>0?mktCap/ni:null;
+  const margin=rev&&ebitda?ebitda/rev:null;
+
+  return{ticker:ticker.toUpperCase(),name,rev,ebitda,opInc,da,ni,cash,debt,netDebt,sharesM,price,mktCap,ev,evRev,evEbi,pe,margin,fy};
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESEARCH TARGET — UI HANDLER
+// ─────────────────────────────────────────────────────────────────────────────
+async function researchTarget(){
+  const ticker=v('r-target-ticker');
+  if(!ticker){showToast('Enter a ticker symbol');return;}
+  const statusEl=document.getElementById('r-target-status');
+  const resultEl=document.getElementById('r-target-result');
+  resultEl.style.display='none';
+  spin('r-target-status',`Fetching SEC EDGAR data for ${ticker.toUpperCase()}…`);
   try{
-    const txt=await callClaude(`You are an investment banking analyst. Suggest 5 publicly traded comparable companies for an M&A comps analysis.
-Target: ${g.tgt} | Industry: ${g.ind} | Geography: ${g.geo}
-Return ONLY a valid JSON array, no other text:
-[{"n":"Company Name","ticker":"TICK","er":"2.5x","ee":"12.0x","pe":"18.5x","r":"500","reason":"Why comparable"}]
-Use realistic current market multiples for the ${g.ind} sector.`);
-    const json=JSON.parse(txt.match(/\[[\s\S]*\]/)[0]);
-    out.textContent='✅ Suggested comps:\n\n'+json.map(c=>`• ${c.n} (${c.ticker})\n  Revenue: $${c.r}M | EV/Rev: ${c.er} | EV/EBITDA: ${c.ee} | P/E: ${c.pe}\n  Why: ${c.reason}`).join('\n\n');
-    const compsSl=slides.find(s=>s.typeId==='comps');
-    if(compsSl){compsSl.rows=json.map(c=>({n:c.n,er:c.er,ee:c.ee,pe:c.pe,r:c.r}));renderDeck();showToast('Comps populated ✓');}
-  }catch(e){out.textContent='Error: '+e.message;}
+    const d=await fetchCompanyData(ticker);
+    researchedTarget=d;
+    setEl('r-target-name',`${d.name} (${d.ticker})`);
+    setEl('r-t-rev',  d.rev   ?fmtM(d.rev)  :'Not in EDGAR');
+    setEl('r-t-ebitda',d.ebitda?fmtM(d.ebitda):'Estimated from Op.Inc + D&A');
+    setEl('r-t-margin',d.margin?`${fmt(d.margin*100,1)}%`:'—');
+    setEl('r-t-ni',   d.ni    ?fmtM(d.ni)   :'—');
+    setEl('r-t-fy',   d.fy    ?d.fy         :'—');
+    setEl('r-t-shr',  d.sharesM?`${fmt(d.sharesM,1)}M`:'—');
+    setEl('r-t-price',d.price ?`$${fmt(d.price,2)}`:  '— (Yahoo unavailable)');
+    setEl('r-t-mcap', d.mktCap?fmtB(d.mktCap):'—');
+    setEl('r-t-nd',   fmtM(d.netDebt));
+    setEl('r-t-ev',   d.ev    ?fmtB(d.ev)   :'— (need live price)');
+    resultEl.style.display='block';
+    statusEl.innerHTML=`<span class="status-dot green"></span>Data loaded from SEC EDGAR 10-K${d.price?' + Yahoo Finance live price':''}`;
+  }catch(e){
+    statusEl.innerHTML=`<span class="status-dot red"></span>Error: ${e.message}`;
+  }
 }
-async function suggestCompsForSlide(){switchTab('ai');await suggestComps();}
-async function generateCustomSlide(){
-  const prompt=document.getElementById('customPrompt').value.trim();
-  const out=document.getElementById('customOutput');
-  const addBtn=document.getElementById('addCustomBtn');
-  if(!prompt){showToast('Enter a slide description first');return;}
-  out.className='ai-out show';out.textContent='⏳ Claude is building your slide...';addBtn.style.display='none';
+
+function autofillSetup(){
+  if(!researchedTarget)return;
+  const d=researchedTarget;
+  if(d.name)document.getElementById('s-tgt').value=d.name;
+  if(d.rev)   document.getElementById('s-rev').value=fmt(d.rev,0).replace(/,/g,'');
+  if(d.ebitda)document.getElementById('s-ebitda').value=fmt(d.ebitda,0).replace(/,/g,'');
+  if(d.ni)    document.getElementById('s-ni').value=fmt(d.ni,0).replace(/,/g,'');
+  if(d.netDebt)document.getElementById('s-nd').value=fmt(d.netDebt,0).replace(/,/g,'');
+  if(d.sharesM)document.getElementById('s-shr').value=fmt(d.sharesM,1).replace(/,/g,'');
+  if(d.price)document.getElementById('s-undist').value=fmt(d.price,2);
+  document.getElementById('fin-source').textContent='SEC EDGAR 10-K';
+  switchTab('setup');showToast(`Deal Setup filled from ${d.ticker} SEC 10-K data`);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESEARCH COMPS — UI HANDLER
+// ─────────────────────────────────────────────────────────────────────────────
+async function researchComps(){
+  const inputs=[...document.querySelectorAll('.comp-ticker-in')];
+  const tickers=inputs.map(i=>i.value.trim().toUpperCase()).filter(Boolean);
+  if(!tickers.length){showToast('Enter at least one ticker');return;}
+  const grid=document.getElementById('comp-cards-grid');
+  const actionsEl=document.getElementById('comp-research-actions');
+  grid.innerHTML='';actionsEl.style.display='none';
+  document.getElementById('ai-comps-analysis').style.display='none';
+  researchedComps=[];
+
+  // Show loading cards
+  tickers.forEach(t=>{
+    const card=document.createElement('div');
+    card.className='comp-card loading';card.id=`cc-${t}`;
+    card.innerHTML=`<div class="comp-name"><span class="spinner"></span>${t}</div><div style="color:#8892b0;font-size:.75rem">Fetching EDGAR data…</div>`;
+    grid.appendChild(card);
+  });
+
+  // Fetch each company (sequentially to be polite to SEC API)
+  for(const ticker of tickers){
+    const card=document.getElementById(`cc-${ticker}`);
+    try{
+      const d=await fetchCompanyData(ticker);
+      researchedComps.push(d);
+      card.className='comp-card';
+      card.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px">
+          <div><div class="comp-name">${d.name.length>22?d.name.slice(0,22)+'…':d.name}</div><div class="comp-ticker">${d.ticker}</div></div>
+          ${d.price?`<div style="color:#c9a84c;font-weight:700;font-size:.85rem">$${fmt(d.price,2)}</div>`:''}
+        </div>
+        <div class="comp-metric"><span>EV/Revenue</span><span>${d.evRev?fmt(d.evRev,1)+'x':'—'}</span></div>
+        <div class="comp-metric"><span>EV/EBITDA</span><span>${d.evEbi?fmt(d.evEbi,1)+'x':'—'}</span></div>
+        <div class="comp-metric"><span>P/E</span><span>${d.pe?fmt(d.pe,1)+'x':'—'}</span></div>
+        <div class="comp-metric"><span>Revenue</span><span>${d.rev?fmtM(d.rev):'—'}</span></div>
+        <div class="comp-metric"><span>EBITDA Margin</span><span>${d.margin?fmt(d.margin*100,1)+'%':'—'}</span></div>
+        <div class="comp-metric"><span>Mkt Cap</span><span>${d.mktCap?fmtB(d.mktCap):'—'}</span></div>`;
+    }catch(e){
+      card.className='comp-card error';
+      card.innerHTML=`<div class="comp-name">${ticker}</div><div style="color:#fca5a5;font-size:.75rem">${e.message}</div>`;
+    }
+  }
+  if(researchedComps.length){actionsEl.style.display='block';}
+}
+
+function clearCompCards(){
+  document.getElementById('comp-cards-grid').innerHTML='';
+  document.getElementById('comp-research-actions').style.display='none';
+  researchedComps=[];
+}
+
+function populateCompsSlide(){
+  if(!researchedComps.length){showToast('Fetch comps data first');return;}
+  // Find existing comps slide or create one
+  let compSlide=slides.find(s=>s.typeId==='comps');
+  if(!compSlide){
+    slides.push({uid:uid++,typeId:'comps',chartType:'Table',open:false,name:'Trading Comps',rows:[]});
+    compSlide=slides[slides.length-1];
+  }
+  const rows=researchedComps.map(d=>({
+    co:d.name.length>20?d.ticker:d.name,
+    ev_rev: d.evRev?fmt(d.evRev,1)+'x':'—',
+    ev_ebitda:d.evEbi?fmt(d.evEbi,1)+'x':'—',
+    pe:  d.pe?fmt(d.pe,1)+'x':'—',
+    rev_g:'—',
+    margin:d.margin?fmt(d.margin*100,1)+'%':'—',
+  }));
+  // Add median row
+  const evEbis=researchedComps.map(d=>d.evEbi).filter(Boolean);
+  const evRevs=researchedComps.map(d=>d.evRev).filter(Boolean);
+  const pes=researchedComps.map(d=>d.pe).filter(Boolean);
+  const margins=researchedComps.map(d=>d.margin).filter(Boolean);
+  function median(arr){const s=[...arr].sort((a,b)=>a-b);const m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2;}
+  rows.push({
+    co:'Median',
+    ev_rev: evRevs.length?fmt(median(evRevs),1)+'x':'—',
+    ev_ebitda:evEbis.length?fmt(median(evEbis),1)+'x':'—',
+    pe:  pes.length?fmt(median(pes),1)+'x':'—',
+    rev_g:'—',
+    margin:margins.length?fmt(median(margins)*100,1)+'%':'—',
+  });
+  compSlide.rows=rows;
+  renderSlides();switchTab('builder');
+  showToast(`Comps slide updated with ${researchedComps.length} real companies`);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI TOOLS
+// ─────────────────────────────────────────────────────────────────────────────
+async function aiSuggestTickers(){
   const g=G();
+  const out=document.getElementById('ai-comps-out');
+  out.style.display='block';out.textContent='Thinking…';
   try{
-    const txt=await callClaude(`You are building one PowerPoint slide for an M&A pitch book.
-Deal: ${g.acq} acquiring ${g.tgt} (${g.dtype}), ${g.ind}, TEV ${fmt(g.tev)}.
-User request: "${prompt}"
-Return ONLY valid JSON, no other text:
-{"title":"Slide Title","subtitle":"Optional or null","type":"bullets","content":{"items":["Bullet 1","Bullet 2","Bullet 3","Bullet 4"]},"footnote":"Source or null"}
-Types: bullets={items:[]}, table={headers:[],rows:[]}, two_col={left_title,left_items:[],right_title,right_items:[]}, metrics={items:[{label,value,sub}]}
-Use professional investment banking language. Be concise.`);
-    const json=JSON.parse(txt.match(/\{[\s\S]*\}/)[0]);
-    customSlideData=json;
-    out.textContent='✅ Slide generated:\n\nTitle: '+json.title+(json.subtitle?'\nSubtitle: '+json.subtitle:'')+'\nType: '+json.type+'\n\n'+JSON.stringify(json.content,null,2);
-    addBtn.style.display='block';
+    const txt=await callClaude(`You are an investment banking analyst. Suggest 6 publicly traded US companies that are strong comparable companies for a ${g.dtype} where the target is in the ${g.ind} sector, ${g.geo}. LTM Revenue ~${fmtM(g.rev)}, EBITDA ~${fmtM(g.ebitda)}.\n\nFor each, provide: Company name, US ticker symbol, and a one-sentence rationale. Format as a clean numbered list: "1. Apple (AAPL) — rationale". Focus on tickers that are listed on NYSE or NASDAQ and would be in SEC EDGAR.`);
+    out.textContent=txt;
   }catch(e){out.textContent='Error: '+e.message;}
 }
-function addCustomToDeck(){
-  const sl={uid:uid(),typeId:'custom',chartType:'',open:true,name:'Custom: '+(customSlideData?.title||'AI Slide'),customData:customSlideData};
-  slides.push(sl);renderLibrary();renderDeck();showToast('Custom slide added ✓');switchTab('builder');
+async function aiAnalyseComps(){
+  if(!researchedComps.length){showToast('Fetch comps data first');return;}
+  const g=G();
+  const out=document.getElementById('ai-comps-analysis');
+  out.style.display='block';out.textContent='Analysing real data with Claude…';
+  const compSummary=researchedComps.map(d=>`${d.name} (${d.ticker}): EV/Rev ${d.evRev?fmt(d.evRev,1)+'x':'N/A'}, EV/EBITDA ${d.evEbi?fmt(d.evEbi,1)+'x':'N/A'}, P/E ${d.pe?fmt(d.pe,1)+'x':'N/A'}, EBITDA Margin ${d.margin?fmt(d.margin*100,1)+'%':'N/A'}`).join('\n');
+  try{
+    const txt=await callClaude(`You are a senior investment banking analyst. Analyse the following real trading comps for a ${g.dtype} transaction where the target is ${g.tgt||'the company'} in the ${g.ind} sector.\n\nComparable companies (data from SEC EDGAR + live prices):\n${compSummary}\n\nTarget financials: Revenue ${fmtM(g.rev)}, EBITDA ${fmtM(g.ebitda)}, TEV ${fmtM(g.tev)}.\n\nProvide: (1) Commentary on where the target's implied valuation sits vs. the comp set, (2) Which comps are most relevant and why, (3) Implied TEV range for the target based on median multiples, (4) Key takeaway for the pitch book. Use crisp banking language.`,1400);
+    out.textContent=txt;
+  }catch(e){out.textContent='Error: '+e.message;}
+}
+async function aiSlide(){
+  const g=G();
+  const prompt=document.getElementById('ai-slide-prompt').value.trim();
+  if(!prompt){showToast('Enter a slide description');return;}
+  const out=document.getElementById('ai-slide-out');
+  out.style.display='block';out.textContent='Generating…';
+  document.getElementById('ai-add-btn').style.display='none';
+  customSlideData=null;
+  try{
+    const txt=await callClaude(`You are a senior investment banking analyst creating a PowerPoint slide for an M&A pitch book.\nDeal: ${g.acq} acquiring ${g.tgt} in the ${g.ind} sector. ${g.dtype}. Advisor: ${g.bank}.\nTarget financials: Revenue ${fmtM(g.rev)}, EBITDA ${fmtM(g.ebitda)}, TEV ${fmtM(g.tev)}.\n\nSlide request: ${prompt}\n\nProvide: (1) Slide title, (2) 4–6 concise bullet points with sub-bullets where appropriate, (3) One-sentence key takeaway for the bottom of the slide. Use crisp, professional banking language.`);
+    out.textContent=txt;customSlideData=txt;
+    document.getElementById('ai-add-btn').style.display='block';
+  }catch(e){out.textContent='Error: '+e.message;}
+}
+function addAiSlide(){
+  if(!customSlideData){showToast('Generate content first');return;}
+  slides.push({uid:uid++,typeId:'custom',chartType:'',open:false,name:'Custom AI Slide',rows:[],aiContent:customSlideData});
+  renderSlides();switchTab('builder');showToast('Custom slide added to deck');
 }
 
-// ── PPT GENERATION ─────────────────────────────────────────────────────────
 async function generatePPT(){
-  if(typeof PptxGenJS==='undefined'){showToast('PptxGenJS not loaded — check internet connection');return;}
-  if(!slides.length){showToast('Add slides to your deck first');return;}
-  const btn=document.getElementById('genBtn');
-  btn.disabled=true;btn.textContent='⏳ Generating...';
-  try{
-    const pptx=new PptxGenJS();
-    pptx.layout='LAYOUT_WIDE';
-    const g=G();
-    const C={N:'0A1628',N2:'112240',N3:'1A2A4A',G:'C9A84C',G2:'E8C56D',W:'F8F9FA',GR:'8892B0',GN:'27AE60',RD:'E74C3C',BL:'2E86AB',PR:'A23B72'};
+  if(typeof PptxGenJS==='undefined'){showToast('PptxGenJS not loaded — check internet and refresh');return;}
+  if(!slides.length){showToast('Add at least one slide first');return;}
+  const g=G();
+  const pptx=new PptxGenJS();
+  pptx.layout='LAYOUT_WIDE';
 
-    function bg(s){s.background={color:C.N};}
-    function hdr(s,title,sub){
-      bg(s);
-      s.addShape(pptx.ShapeType.rect,{x:0,y:0,w:.32,h:7.5,fill:{color:C.G},line:{color:C.G}});
-      s.addShape(pptx.ShapeType.rect,{x:.32,y:0,w:13.01,h:1.05,fill:{color:C.N2},line:{color:C.N2}});
-      s.addText(g.bank.toUpperCase(),{x:.55,y:.12,w:7,h:.28,fontSize:8,bold:true,color:C.G,charSpacing:3});
-      s.addText('STRICTLY CONFIDENTIAL',{x:8,y:.12,w:4.9,h:.28,fontSize:7,bold:true,color:C.GR,align:'right'});
-      s.addText(title,{x:.55,y:.38,w:12.5,h:.5,fontSize:18,bold:true,color:C.W});
-      if(sub)s.addText(sub,{x:.55,y:.84,w:12.5,h:.2,fontSize:10,color:C.G2});
-      s.addShape(pptx.ShapeType.rect,{x:.55,y:1.1,w:12.1,h:.025,fill:{color:C.G},line:{color:C.G}});
-      s.addText(g.bank+'  |  Highly Confidential  |  For Discussion Purposes Only',{x:.32,y:7.12,w:13.01,h:.22,fontSize:7,color:C.GR,align:'center'});
+  // ── colour palette ──────────────────────────────────────────────────────────
+  const C={
+    N:'0A1628',   // navy background
+    N2:'112240',  // slightly lighter navy
+    N3:'1A2A4A',  // card / row bg
+    G:'C9A84C',   // gold primary
+    G2:'E8C56D',  // gold lighter
+    W:'F8F9FA',   // near-white text
+    GR:'8892B0',  // grey text
+    GN:'27AE60',  // green (positive / mitigant)
+    RD:'E74C3C',  // red (risk)
+    BL:'2E86AB',  // blue accent
+    PR:'A23B72',  // purple accent
+  };
+
+  // ── shared helpers ──────────────────────────────────────────────────────────
+  function hdr(sl,title,subtitle=''){
+    sl.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:7.5,fill:{color:C.N}});
+    sl.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:1.1,fill:{color:C.N2}});
+    sl.addShape(pptx.ShapeType.rect,{x:0,y:1.05,w:13.33,h:0.04,fill:{color:C.G}});
+    sl.addText(title,{x:0.4,y:0.16,w:10,h:0.65,fontSize:20,bold:true,color:C.W,fontFace:'Calibri'});
+    if(subtitle)sl.addText(subtitle,{x:0.4,y:0.72,w:10,h:0.26,fontSize:9.5,color:C.GR,fontFace:'Calibri'});
+    sl.addText(`${g.bank} | Confidential`,{x:10.4,y:0.22,w:2.7,h:0.28,fontSize:7.5,color:C.GR,align:'right',fontFace:'Calibri'});
+    sl.addShape(pptx.ShapeType.rect,{x:0,y:7.3,w:13.33,h:0.2,fill:{color:C.N3}});
+  }
+
+  function metaBox(sl,x,y,w,label,val,sub=''){
+    sl.addShape(pptx.ShapeType.rect,{x,y,w,h:1.0,fill:{color:C.N3},line:{color:C.G,width:0.75}});
+    sl.addText(label,{x:x+0.1,y:y+0.07,w:w-0.2,h:0.2,fontSize:7,color:C.GR,fontFace:'Calibri'});
+    sl.addText(val,  {x:x+0.1,y:y+0.27,w:w-0.2,h:0.44,fontSize:15,bold:true,color:C.G2,fontFace:'Calibri'});
+    if(sub)sl.addText(sub,{x:x+0.1,y:y+0.72,w:w-0.2,h:0.2,fontSize:7,color:C.GR,fontFace:'Calibri'});
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  for(const s of slides){
+
+    const sl=pptx.addSlide();
+    const t=SLIDE_TYPES.find(x=>x.id===s.typeId);
+
+    // ══════════════════════════════════════ 1. COVER ══
+    if(s.typeId==='cover'){
+      sl.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:7.5,fill:{color:C.N}});
+      sl.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:2.9,fill:{color:C.N2}});
+      sl.addShape(pptx.ShapeType.rect,{x:0,y:2.85,w:13.33,h:0.06,fill:{color:C.G}});
+      sl.addText('CONFIDENTIAL',{x:0.5,y:0.22,w:5,h:0.28,fontSize:8.5,bold:true,color:C.G,fontFace:'Calibri',charSpacing:3});
+      sl.addText(`Project ${g.tgt}`,{x:0.5,y:0.55,w:12,h:0.9,fontSize:34,bold:true,color:C.W,fontFace:'Calibri'});
+      sl.addText(`${g.dtype} — ${g.acq} / ${g.tgt}`,{x:0.5,y:1.5,w:12,h:0.4,fontSize:14,color:C.G2,fontFace:'Calibri'});
+      sl.addText(`${g.bank} acting as ${g.role}`,{x:0.5,y:1.95,w:12,h:0.28,fontSize:9.5,color:C.GR,fontFace:'Calibri'});
+      // 4 metric boxes
+      const prem=g.offer&&g.undist?`${fmt(((g.offer-g.undist)/g.undist)*100,1)}%`:'—';
+      const boxes=[
+        ['Transaction Value', g.tev?fmtM(g.tev):'—',           'Enterprise Value'],
+        ['Offer Price',       g.offer?`$${fmt(g.offer,2)}`:'—', 'Per Diluted Share'],
+        ['Premium Paid',      prem,                              'To Undisturbed Price'],
+        ['Consideration',     g.cons||'—',                       'Structure'],
+      ];
+      const bw=2.9,gap=0.22;
+      boxes.forEach((b,i)=>metaBox(sl,0.5+i*(bw+gap),3.1,bw,b[0],b[1],b[2]));
+      sl.addText(
+        `Industry: ${g.ind}  |  Geography: ${g.geo}  |  Announced: ${g.ann||'—'}  |  Expected Close: ${g.close||'—'}`,
+        {x:0.5,y:4.3,w:12.3,h:0.28,fontSize:8.5,color:C.GR,fontFace:'Calibri'}
+      );
+      sl.addText(g.bank,{x:0.5,y:6.85,w:6,h:0.3,fontSize:9.5,bold:true,color:C.G,fontFace:'Calibri'});
+      sl.addText('Strictly Confidential — Not for Distribution',{x:0.5,y:7.1,w:12,h:0.2,fontSize:7.5,color:C.GR,fontFace:'Calibri'});
     }
-    function box(s,x,y,w,h,label,val,col){
-      s.addShape(pptx.ShapeType.rect,{x,y,w,h,fill:{color:C.N3},line:{color:col||C.G,pt:.5}});
-      s.addText(val,{x,y:y+.08,w,h:h*.55,fontSize:16,bold:true,color:C.W,align:'center'});
-      s.addText(label.toUpperCase(),{x,y:y+h*.6,w,h:h*.35,fontSize:7,color:C.G,align:'center',charSpacing:1});
+
+    // ══════════════════════════════════ 2. EXECUTIVE SUMMARY ══
+    else if(s.typeId==='exec_sum'){
+      hdr(sl,'Executive Summary',`${g.acq} Acquisition of ${g.tgt}`);
+      // Top metric boxes
+      const prem=g.offer&&g.undist?`${fmt(((g.offer-g.undist)/g.undist)*100,1)}%`:'—';
+      const evEbi=g.tev&&g.ebitda?`${fmt(g.tev/g.ebitda,1)}x`:'—';
+      metaBox(sl,0.4,1.25,2.9,'Transaction Value',g.tev?fmtM(g.tev):'—','Enterprise Value');
+      metaBox(sl,3.45,1.25,2.9,'Offer Price',g.offer?`$${fmt(g.offer,2)}`:'—','Per Diluted Share');
+      metaBox(sl,6.5,1.25,2.9,'Premium Paid',prem,'To Undisturbed Price');
+      metaBox(sl,9.55,1.25,3.38,'EV / EBITDA',evEbi,'Transaction Multiple');
+
+      // Transaction overview header bar
+      sl.addShape(pptx.ShapeType.rect,{x:0.4,y:2.42,w:8.9,h:0.26,fill:{color:C.N3}});
+      sl.addText('TRANSACTION OVERVIEW',{x:0.4,y:2.45,w:8.9,h:0.2,fontSize:7.5,bold:true,color:C.G,fontFace:'Calibri',charSpacing:1.5});
+
+      const txLines=[
+        `${g.acq} (the "Acquirer") has entered into a definitive agreement to acquire ${g.tgt} (the "Target") in a ${g.dtype} transaction valued at ${g.tev?fmtM(g.tev):'[TEV to be confirmed]'}.`,
+        `${g.bank} is acting as ${g.role} in connection with the proposed transaction.`,
+        `Consideration structure: ${g.cons||'[To be determined]'}. Transaction expected to close ${g.close||'within the next 12 months'}, subject to regulatory approval and customary closing conditions.`,
+        g.syn?`Management has identified $${fmt(g.syn,0)}M in identified synergies, including cost and revenue opportunities, expected to be realised by Year 3 post-close.`:'Strategic rationale supported by operational synergies and market share expansion opportunities.',
+      ];
+      txLines.forEach((ln,i)=>{
+        sl.addShape(pptx.ShapeType.rect,{x:0.4,y:2.76+i*0.56,w:0.06,h:0.36,fill:{color:C.G}});
+        sl.addText(ln,{x:0.55,y:2.76+i*0.56,w:8.65,h:0.48,fontSize:8.5,color:C.W,fontFace:'Calibri',wrap:true});
+      });
+
+      // Right panel — key metrics
+      sl.addShape(pptx.ShapeType.rect,{x:9.55,y:2.42,w:3.38,h:0.26,fill:{color:C.N3}});
+      sl.addText('KEY METRICS',{x:9.55,y:2.45,w:3.38,h:0.2,fontSize:7.5,bold:true,color:C.G,fontFace:'Calibri',charSpacing:1.5});
+      const metrics=[
+        ['Revenue (LTM)',   g.rev?fmtM(g.rev):'—'],
+        ['EBITDA (LTM)',    g.ebitda?fmtM(g.ebitda):'—'],
+        ['EBITDA Margin',   g.rev&&g.ebitda?`${fmt((g.ebitda/g.rev)*100,1)}%`:'—'],
+        ['Net Income',      g.ni?fmtM(g.ni):'—'],
+        ['Net Debt',        g.nd?fmtM(g.nd):'—'],
+        ['Synergies',       g.syn?fmtM(g.syn):'—'],
+        ['Sector',          g.ind||'—'],
+      ];
+      metrics.forEach((m,i)=>{
+        const yy=2.76+i*0.4;
+        sl.addShape(pptx.ShapeType.rect,{x:9.55,y:yy,w:3.38,h:0.37,fill:{color:i%2===0?C.N:C.N3}});
+        sl.addText(m[0],{x:9.6,y:yy+0.07,w:2.0,h:0.24,fontSize:8,color:C.GR,fontFace:'Calibri'});
+        sl.addText(m[1],{x:11.65,y:yy+0.07,w:1.2,h:0.24,fontSize:8,bold:true,color:C.W,fontFace:'Calibri',align:'right'});
+      });
+
+      const notes=s.rows&&s.rows[0]?s.rows[0].notes||'':'';
+      if(notes)sl.addText(notes,{x:0.4,y:6.85,w:12.5,h:0.3,fontSize:7.5,color:C.GR,fontFace:'Calibri',italic:true});
     }
 
-    for(const sl of slides){
-      const s=pptx.addSlide();
-      switch(sl.typeId){
+    // ══════════════════════════════════════ 3. DEAL RATIONALE ══
+    else if(s.typeId==='rationale'){
+      hdr(sl,'Deal Rationale',`Strategic Rationale for the Combination`);
+      s.rows.forEach((r,i)=>{
+        const yy=1.35+i*1.72;
+        sl.addShape(pptx.ShapeType.rect,{x:0.4,y:yy,w:12.4,h:1.55,fill:{color:C.N3},line:{color:C.G,width:0.75}});
+        sl.addShape(pptx.ShapeType.rect,{x:0.4,y:yy,w:0.38,h:1.55,fill:{color:C.G}});
+        sl.addText(`${i+1}`,{x:0.4,y:yy+0.5,w:0.38,h:0.5,fontSize:16,bold:true,color:C.N,fontFace:'Calibri',align:'center'});
+        sl.addText(r.title||'',{x:0.88,y:yy+0.1,w:11.7,h:0.36,fontSize:12,bold:true,color:C.G2,fontFace:'Calibri'});
+        sl.addText(r.body||'',{x:0.88,y:yy+0.48,w:11.7,h:0.95,fontSize:9,color:C.W,fontFace:'Calibri',wrap:true});
+      });
+    }
 
-        case 'cover':{
-          bg(s);
-          s.addShape(pptx.ShapeType.rect,{x:0,y:0,w:.32,h:7.5,fill:{color:C.G},line:{color:C.G}});
-          s.addShape(pptx.ShapeType.rect,{x:.32,y:0,w:13.01,h:2.2,fill:{color:C.N2},line:{color:C.N2}});
-          s.addText(g.bank.toUpperCase(),{x:.55,y:.16,w:7,h:.3,fontSize:9,bold:true,color:C.G,charSpacing:3});
-          s.addText('STRICTLY CONFIDENTIAL',{x:8,y:.16,w:4.9,h:.28,fontSize:7.5,bold:true,color:C.GR,align:'right'});
-          s.addText(g.acq+' / '+g.tgt,{x:.55,y:.6,w:12.3,h:.72,fontSize:28,bold:true,color:C.W});
-          s.addText(g.dtype+'  ·  '+g.ind+'  ·  '+g.geo,{x:.55,y:1.46,w:10,h:.34,fontSize:13,color:C.G2});
-          s.addShape(pptx.ShapeType.rect,{x:.55,y:2.28,w:12.1,h:.025,fill:{color:C.G},line:{color:C.G}});
-          const prem=g.offer&&g.undist?((g.offer/g.undist-1)*100).toFixed(1)+'%':'—';
-          const eq=g.shr&&g.offer?'$'+Math.round(g.shr*g.offer).toLocaleString()+'M':'—';
-          [[fmt(g.tev),'Enterprise Value'],[eq,'Equity Value'],[g.offer?'$'+g.offer.toFixed(2):'—','Offer Price'],[prem,'Premium to Undisturbed'],[g.cons,'Consideration']].forEach(([val,lbl],i)=>box(s,.55+i*2.44,2.5,2.32,1.2,lbl,val));
-          s.addShape(pptx.ShapeType.rect,{x:.55,y:3.88,w:12.1,h:.025,fill:{color:C.G},line:{color:C.G}});
-          s.addText('LTM FINANCIALS',{x:.55,y:3.98,w:5,h:.22,fontSize:7.5,bold:true,color:C.G,charSpacing:2});
-          [['Revenue',fmt(g.rev)],['EBITDA',fmt(g.ebitda)],['Margin',g.rev&&g.ebitda?((g.ebitda/g.rev)*100).toFixed(1)+'%':'—'],['Net Income',fmt(g.ni)],['Net Debt',fmt(g.nd)]].forEach(([l,v],i)=>{
-            s.addText(v,{x:.55+i*2.42,y:4.26,w:2.2,h:.4,fontSize:15,bold:true,color:C.W});
-            s.addText(l.toUpperCase(),{x:.55+i*2.42,y:4.66,w:2.2,h:.22,fontSize:7,color:C.GR,charSpacing:1});
+    // ═══════════════════════════════ 4. KEY INVESTMENT HIGHLIGHTS ══
+    else if(s.typeId==='highlights'){
+      hdr(sl,'Key Investment Highlights',`${g.tgt} — Why Transact`);
+      s.rows.forEach((r,i)=>{
+        const col=i%2;const row=Math.floor(i/2);
+        const x=col===0?0.4:7.05;
+        const y=1.35+row*1.85;
+        const w=6.3;
+        sl.addShape(pptx.ShapeType.rect,{x,y,w,h:1.65,fill:{color:C.N3},line:{color:C.G,width:0.5}});
+        sl.addShape(pptx.ShapeType.rect,{x,y,w,h:0.32,fill:{color:C.G}});
+        sl.addText(r.title||'',{x:x+0.12,y:y+0.05,w:w-0.24,h:0.22,fontSize:8.5,bold:true,color:C.N,fontFace:'Calibri'});
+        sl.addText(r.body||'',{x:x+0.12,y:y+0.38,w:w-0.24,h:1.18,fontSize:8.5,color:C.W,fontFace:'Calibri',wrap:true});
+      });
+    }
+
+    // ══════════════════════════ 5. HISTORICAL FINANCIALS ══
+    else if(s.typeId==='hist_fin'){
+      hdr(sl,'Historical Financial Performance',`${g.tgt} — Revenue & EBITDA`);
+      if(s.rows.length){
+        const labels=s.rows.map(r=>r.yr||'');
+        const revVals=s.rows.map(r=>parseFloat((r.rev||'0').replace(/,/g,''))||0);
+        const ebiVals=s.rows.map(r=>parseFloat((r.ebitda||'0').replace(/,/g,''))||0);
+        const cType=s.chartType==='Line'?pptx.ChartType.line:pptx.ChartType.bar;
+        const chartData=[
+          {name:'Revenue ($M)',labels,values:revVals},
+          {name:'EBITDA ($M)', labels,values:ebiVals},
+        ];
+        sl.addChart(cType,chartData,{
+          x:0.4,y:1.25,w:8.6,h:5.75,
+          barDir:'col',barGrouping:'clustered',
+          chartColors:[C.G,'2E86AB'],
+          showLegend:true,legendPos:'b',legendFontSize:9,
+          lineDataSymbol:'circle',
+          showValue:true,dataLabelFontSize:8,dataLabelColor:C.W,
+          valAxisLabelColor:C.GR,catAxisLabelColor:C.GR,
+          plotAreaBkgdColor:C.N2,chartAreaBkgdColor:C.N,
+          valGridLine:{style:'none'},
+        });
+        // Sidebar table
+        sl.addShape(pptx.ShapeType.rect,{x:9.2,y:1.25,w:3.83,h:0.28,fill:{color:C.N3}});
+        sl.addText('SUMMARY ($M)',{x:9.2,y:1.28,w:3.83,h:0.22,fontSize:7.5,bold:true,color:C.G,fontFace:'Calibri',charSpacing:1.5,align:'center'});
+        ['Year','Revenue','EBITDA','Margin'].forEach((h,ci)=>{
+          sl.addText(h,{x:9.2+[0,0.9,1.9,2.85][ci],y:1.6,w:[0.9,1.0,0.95,0.98][ci],h:0.22,fontSize:7.5,bold:true,color:C.GR,fontFace:'Calibri'});
+        });
+        s.rows.forEach((r,ri)=>{
+          const yy=1.88+ri*0.47;
+          sl.addShape(pptx.ShapeType.rect,{x:9.2,y:yy,w:3.83,h:0.43,fill:{color:ri%2===0?C.N2:C.N3}});
+          [r.yr,r.rev,r.ebitda,r.margin].forEach((val,ci)=>{
+            sl.addText(val||'—',{x:9.2+[0,0.9,1.9,2.85][ci],y:yy+0.1,w:[0.88,0.98,0.93,0.96][ci],h:0.24,fontSize:8,color:ci===0?C.GR:C.W,fontFace:'Calibri'});
           });
-          s.addShape(pptx.ShapeType.rect,{x:.55,y:5.06,w:12.1,h:.025,fill:{color:C.G},line:{color:C.G}});
-          [['Announcement',fmtD(g.ann)],['Expected Close',fmtD(g.close)],[g.bank,g.role]].forEach(([l,v],i)=>{
-            s.addText(v,{x:.55+i*4.0,y:5.34,w:3.8,h:.35,fontSize:11,bold:true,color:C.W});
-            s.addText(l.toUpperCase(),{x:.55+i*4.0,y:5.7,w:3.8,h:.22,fontSize:7,color:C.GR,charSpacing:1});
+        });
+        // CAGR note
+        if(revVals.length>=2&&revVals[0]>0){
+          const cagr=(Math.pow(revVals[revVals.length-1]/revVals[0],1/(revVals.length-1))-1)*100;
+          sl.addText(`Revenue CAGR: ${fmt(cagr,1)}% over period shown  |  Source: Company filings`,
+            {x:0.4,y:7.05,w:12.5,h:0.22,fontSize:7.5,color:C.GR,fontFace:'Calibri',italic:true});
+        }
+      } else {
+        sl.addText('No historical data — add rows in Slide Builder → Historical Financials.',
+          {x:0.5,y:3.5,w:12,h:0.5,fontSize:12,color:C.GR,fontFace:'Calibri',align:'center'});
+      }
+    }
+
+    // ══════════════════════════════ 6. FINANCIAL PROJECTIONS ══
+    else if(s.typeId==='proj'){
+      hdr(sl,'Financial Projections',`${g.tgt} — Management Case`);
+      if(s.rows.length){
+        const labels=s.rows.map(r=>r.yr||'');
+        const revVals=s.rows.map(r=>parseFloat((r.rev||'0').replace(/,/g,''))||0);
+        const ebiVals=s.rows.map(r=>parseFloat((r.ebitda||'0').replace(/,/g,''))||0);
+        const cType=s.chartType==='Line'?pptx.ChartType.line:pptx.ChartType.bar;
+        sl.addChart(cType,[
+          {name:'Revenue ($M)',labels,values:revVals},
+          {name:'EBITDA ($M)', labels,values:ebiVals},
+        ],{
+          x:0.4,y:1.25,w:8.6,h:5.75,
+          barDir:'col',barGrouping:'clustered',
+          chartColors:[C.G,'2E86AB'],
+          showLegend:true,legendPos:'b',legendFontSize:9,
+          lineDataSymbol:'circle',
+          showValue:true,dataLabelFontSize:8,dataLabelColor:C.W,
+          valAxisLabelColor:C.GR,catAxisLabelColor:C.GR,
+          plotAreaBkgdColor:C.N2,chartAreaBkgdColor:C.N,
+          valGridLine:{style:'none'},
+        });
+        // Sidebar
+        sl.addShape(pptx.ShapeType.rect,{x:9.2,y:1.25,w:3.83,h:0.28,fill:{color:C.N3}});
+        sl.addText('PROJECTIONS ($M)',{x:9.2,y:1.28,w:3.83,h:0.22,fontSize:7.5,bold:true,color:C.G,fontFace:'Calibri',charSpacing:1.5,align:'center'});
+        ['Year','Revenue','EBITDA','Margin'].forEach((h,ci)=>{
+          sl.addText(h,{x:9.2+[0,0.9,1.9,2.85][ci],y:1.6,w:[0.9,1.0,0.95,0.98][ci],h:0.22,fontSize:7.5,bold:true,color:C.GR,fontFace:'Calibri'});
+        });
+        s.rows.forEach((r,ri)=>{
+          const yy=1.88+ri*0.52;
+          sl.addShape(pptx.ShapeType.rect,{x:9.2,y:yy,w:3.83,h:0.48,fill:{color:ri%2===0?C.N2:C.N3}});
+          [r.yr,r.rev,r.ebitda,r.margin].forEach((val,ci)=>{
+            sl.addText(val||'—',{x:9.2+[0,0.9,1.9,2.85][ci],y:yy+0.12,w:[0.88,0.98,0.93,0.96][ci],h:0.26,fontSize:8,color:ci===0?C.GR:C.W,fontFace:'Calibri'});
           });
-          s.addText(g.bank+'  |  Highly Confidential  |  For Discussion Purposes Only',{x:.32,y:7.12,w:13.01,h:.22,fontSize:7,color:C.GR,align:'center'});
-          break;
+        });
+        if(revVals.length>=2&&revVals[0]>0){
+          const cagr=(Math.pow(revVals[revVals.length-1]/revVals[0],1/(revVals.length-1))-1)*100;
+          sl.addText(`Projected Revenue CAGR: ${fmt(cagr,1)}%  |  Management Case — for discussion purposes only`,
+            {x:0.4,y:7.05,w:12.5,h:0.22,fontSize:7.5,color:C.GR,fontFace:'Calibri',italic:true});
         }
+      } else {
+        sl.addText('No projection data — add rows in Slide Builder → Financial Projections.',
+          {x:0.5,y:3.5,w:12,h:0.5,fontSize:12,color:C.GR,fontFace:'Calibri',align:'center'});
+      }
+    }
 
-        case 'exec_sum':{
-          hdr(s,'Executive Summary',g.acq+' / '+g.tgt+' — '+g.dtype);
-          let y=1.28;
-          if(sl.intro){s.addText(sl.intro,{x:.55,y,w:12.1,h:.5,fontSize:11,color:C.GR,italic:true});y+=.6;}
-          (sl.bullets||[]).filter(Boolean).forEach(b=>{
-            s.addShape(pptx.ShapeType.rect,{x:.55,y,w:12.1,h:.65,fill:{color:C.N3},line:{color:C.G,pt:.5}});
-            s.addShape(pptx.ShapeType.rect,{x:.55,y,w:.2,h:.65,fill:{color:C.G},line:{color:C.G}});
-            s.addText(b,{x:.82,y:y+.07,w:11.7,h:.5,fontSize:11,color:C.W,valign:'middle'});
-            y+=.76;
-          });
-          break;
-        }
+    // ══════════════════════════════════════ 7. DEAL STRUCTURE ══
+    else if(s.typeId==='deal_str'){
+      hdr(sl,'Deal Structure',`${g.acq} Acquisition of ${g.tgt}`);
+      const prem=g.offer&&g.undist?`${fmt(((g.offer-g.undist)/g.undist)*100,1)}%`:'—';
+      metaBox(sl,0.4,1.25,3.0,'Transaction Value',g.tev?fmtM(g.tev):'—','Enterprise Value');
+      metaBox(sl,3.55,1.25,3.0,'Offer Price',g.offer?`$${fmt(g.offer,2)}`:'—','Per Diluted Share');
+      metaBox(sl,6.7,1.25,3.0,'Premium Paid',prem,'To Undisturbed Price');
+      metaBox(sl,9.85,1.25,3.08,'Consideration',g.cons||'—','Structure');
 
-        case 'rationale':{
-          hdr(s,'Deal Rationale','Why '+g.acq+' is Acquiring '+g.tgt);
-          const pts=(sl.pts||[]).filter(Boolean);
-          pts.forEach((pt,i)=>{
-            const py=1.38+i*1.75;
-            s.addShape(pptx.ShapeType.ellipse,{x:.55,y:py,w:.52,h:.52,fill:{color:C.G},line:{color:C.G}});
-            s.addText(''+(i+1),{x:.55,y:py,w:.52,h:.52,fontSize:14,bold:true,color:C.N,align:'center',valign:'middle'});
-            s.addShape(pptx.ShapeType.rect,{x:1.2,y:py,w:11.4,h:1.4,fill:{color:C.N3},line:{color:C.G,pt:.5}});
-            s.addText(pt,{x:1.38,y:py+.1,w:11.0,h:.9,fontSize:13,color:C.W,valign:'middle'});
-            const syncom=v('sd-'+sl.uid+'-syncom')||'';
-            if(i===pts.length-1&&syncom)s.addText(syncom,{x:1.38,y:py+.98,w:6,h:.28,fontSize:9,color:C.G2});
-          });
-          break;
-        }
-
-        case 'highlights':{
-          hdr(s,'Key Investment Highlights',g.tgt);
-          (sl.pts||[]).filter(Boolean).forEach((pt,i)=>{
-            const col=i%2===0?C.BL:C.PR;
-            const x=i%2===0?.55:6.7,y=1.38+Math.floor(i/2)*1.65;
-            s.addShape(pptx.ShapeType.rect,{x,y,w:5.82,h:1.4,fill:{color:C.N3},line:{color:col,pt:1}});
-            s.addShape(pptx.ShapeType.rect,{x,y,w:5.82,h:.32,fill:{color:col},line:{color:col}});
-            s.addText('0'+(i+1),{x:x+.1,y,w:.5,h:.32,fontSize:10,bold:true,color:C.N,valign:'middle'});
-            s.addText(pt,{x:x+.18,y:y+.4,w:5.5,h:.9,fontSize:11,color:C.W,valign:'middle'});
-          });
-          break;
-        }
-
-        case 'hist_fin':{
-          hdr(s,'Historical Financial Performance',g.tgt+' — LTM & Historical');
-          const yrs=sl.yrs||[];
-          const labels=yrs.map(y=>y.l),revs=yrs.map(y=>parseFloat(y.r)||0),ebs=yrs.map(y=>parseFloat(y.e)||0);
-          if(revs.some(v=>v>0)){
-            const cd=[{name:'Revenue ($M)',labels,values:revs}];
-            if(ebs.some(v=>v>0))cd.push({name:'EBITDA ($M)',labels,values:ebs});
-            const ct=sl.chartType==='Line'?pptx.ChartType.line:pptx.ChartType.bar;
-            s.addChart(ct,cd,{x:.55,y:1.28,w:8,h:4.8,barDir:'col',chartColors:[C.G,C.BL],showLegend:true,legendPos:'b',showValue:true,dataLabelFontSize:9,catAxisLabelFontSize:9});
-          }
-          const td=[[{text:'Year',options:{bold:true,color:C.W,fill:{color:C.N3}}},...labels.map(l=>({text:l,options:{bold:true,color:C.G,fill:{color:C.N3}}}))]];
-          td.push([{text:'Revenue',options:{color:C.GR}},...revs.map(v=>({text:v?'$'+v+'M':'—',options:{color:C.W}}))]);
-          td.push([{text:'EBITDA',options:{color:C.GR}},...ebs.map(v=>({text:v?'$'+v+'M':'—',options:{color:C.W}}))]);
-          s.addTable(td,{x:9,y:1.28,w:3.65,h:1.8,border:{pt:.5,color:C.G},fontSize:10,fontFace:'Segoe UI',color:C.W,fill:{color:C.N2}});
-          break;
-        }
-
-        case 'proj':{
-          hdr(s,'Financial Projections',g.tgt+' — Management Case');
-          const yrs=sl.yrs||[];
-          const labels=yrs.map(y=>y.l),revs=yrs.map(y=>parseFloat(y.r)||0),ebs=yrs.map(y=>parseFloat(y.e)||0);
-          if(revs.some(v=>v>0)){
-            const cd=[{name:'Revenue ($M)',labels,values:revs}];
-            if(ebs.some(v=>v>0))cd.push({name:'EBITDA ($M)',labels,values:ebs});
-            const ct=sl.chartType==='Line'?pptx.ChartType.line:pptx.ChartType.bar;
-            s.addChart(ct,cd,{x:.55,y:1.28,w:12.1,h:5.2,barDir:'col',chartColors:[C.G,C.BL],showLegend:true,legendPos:'b',showValue:true,dataLabelFontSize:9,catAxisLabelFontSize:9});
-          }
-          break;
-        }
-
-        case 'comps':{
-          hdr(s,'Comparable Companies Analysis',g.tgt+' vs. Public Peers — LTM');
-          const rows=sl.rows||[];
-          const thO={bold:true,color:'000000',fill:{color:C.G}};
-          const prem=g.offer&&g.undist?((g.offer/g.undist-1)*100).toFixed(1)+'%':'—';
-          const tev=g.tev,rev=g.rev,ebitda=g.ebitda,ni=g.ni,shr=g.shr,offer=g.offer;
-          const td=[[{text:'Company',options:thO},{text:'Revenue ($M)',options:thO},{text:'EV / Revenue',options:thO},{text:'EV / EBITDA',options:thO},{text:'P / E',options:thO}],
-            [{text:g.tgt+' (Target)',options:{bold:true,color:C.G2,fill:{color:'1A3A6A'}}},{text:rev?'$'+rev.toLocaleString()+'M':'—',options:{bold:true,color:C.G2,fill:{color:'1A3A6A'}}},{text:tev&&rev?(tev/rev).toFixed(1)+'x':'—',options:{bold:true,color:C.G2,fill:{color:'1A3A6A'}}},{text:tev&&ebitda?(tev/ebitda).toFixed(1)+'x':'—',options:{bold:true,color:C.G2,fill:{color:'1A3A6A'}}},{text:shr&&offer&&ni?((shr*offer)/ni).toFixed(1)+'x':'—',options:{bold:true,color:C.G2,fill:{color:'1A3A6A'}}}],
-            ...rows.filter(r=>r.n).map((r,i)=>[{text:r.n,options:{color:C.W,fill:{color:i%2===0?C.N3:'142230'}}},{text:r.r?'$'+Number(r.r).toLocaleString()+'M':'—',options:{color:C.W,fill:{color:i%2===0?C.N3:'142230'}}},{text:r.er||'—',options:{color:C.W,fill:{color:i%2===0?C.N3:'142230'}}},{text:r.ee||'—',options:{color:C.W,fill:{color:i%2===0?C.N3:'142230'}}},{text:r.pe||'—',options:{color:C.W,fill:{color:i%2===0?C.N3:'142230'}}}])
-          ];
-          s.addTable(td,{x:.55,y:1.28,w:12.1,colW:[4,2,2,2,2.1],border:{pt:.5,color:C.G},fontSize:10,fontFace:'Segoe UI'});
-          if(sl.chartType==='Bar'&&rows.filter(r=>r.n).length){
-            const labels=[g.tgt,...rows.filter(r=>r.n).map(r=>r.n)];
-            const vals=[tev&&ebitda?parseFloat((tev/ebitda).toFixed(1)):0,...rows.filter(r=>r.n).map(r=>parseFloat(r.ee)||0)];
-            s.addChart(pptx.ChartType.bar,[{name:'EV/EBITDA',labels,values:vals}],{x:.55,y:4.2,w:12.1,h:2.5,barDir:'bar',chartColors:[C.G],showValue:true,dataLabelFontSize:8,catAxisLabelFontSize:8});
-          }
-          break;
-        }
-
-        case 'prec_tx':{
-          hdr(s,'Precedent Transactions',g.ind+' Sector — Selected M&A Transactions');
-          const rows=sl.rows||[];
-          const thO={bold:true,color:'000000',fill:{color:C.G}};
-          const td=[[{text:'Target',options:thO},{text:'Acquirer',options:thO},{text:'Date',options:thO},{text:'EV ($M)',options:thO},{text:'EV/Rev',options:thO},{text:'EV/EBITDA',options:thO},{text:'Premium',options:thO}],
-            ...rows.filter(r=>r.target).map((r,i)=>[{text:r.target,options:{bold:true,color:C.G2,fill:{color:i%2===0?C.N3:'142230'}}},...['acq','date','ev','er','ee','prem'].map(k=>({text:r[k]||'—',options:{color:C.W,fill:{color:i%2===0?C.N3:'142230'}}}))])
-          ];
-          s.addTable(td,{x:.55,y:1.28,w:12.1,colW:[2.8,2.4,1.2,1.5,1.4,1.4,1.4],border:{pt:.5,color:C.G},fontSize:10,fontFace:'Segoe UI'});
-          s.addText('Source: Public filings, Bloomberg. Multiples calculated at announcement.',{x:.55,y:6.8,w:12,h:.22,fontSize:7.5,color:C.GR});
-          break;
-        }
-
-        case 'ff':{
-          hdr(s,'Valuation Summary — Football Field','Implied Enterprise Value ($M) — '+g.tgt);
-          const ranges=[{label:'DCF Analysis',low:g.dcfl,high:g.dcfh,col:C.BL},{label:'Trading Comps',low:g.tcl,high:g.tch,col:C.PR},{label:'Precedent Transactions',low:g.ptl,high:g.pth,col:'F18F01'},{label:'LBO Analysis',low:g.lbol,high:g.lboh,col:C.RD}].filter(r=>r.low&&r.high);
-          if(!ranges.length){s.addText('Enter valuation ranges in Deal Setup',{x:.55,y:3,w:12,h:1,fontSize:14,color:C.GR,align:'center'});break;}
-          const allV=ranges.flatMap(r=>[r.low,r.high]);
-          const gmin=Math.min(...allV)*.92,gmax=Math.max(...allV)*1.08;
-          const cw=9.5,cx0=3.2,cy0=1.35,rh=.88,rg=.3;
-          const toX=val=>cx0+(val-gmin)/(gmax-gmin)*cw;
-          ranges.forEach((r,i)=>{
-            const ry=cy0+i*(rh+rg);
-            s.addText(r.label,{x:.55,y:ry+.22,w:2.5,h:.4,fontSize:10,bold:true,color:C.W,align:'right'});
-            s.addShape(pptx.ShapeType.rect,{x:cx0,y:ry+.15,w:cw,h:rh*.55,fill:{color:C.N3},line:{color:C.N3}});
-            const bx=toX(r.low),bw=toX(r.high)-toX(r.low);
-            s.addShape(pptx.ShapeType.rect,{x:bx,y:ry+.15,w:Math.max(bw,.05),h:rh*.55,fill:{color:r.col},line:{color:r.col}});
-            s.addText('$'+r.low.toLocaleString()+'M',{x:bx-.88,y:ry+.2,w:.84,h:.28,fontSize:8,color:C.W,align:'right'});
-            s.addText('$'+r.high.toLocaleString()+'M',{x:bx+bw+.04,y:ry+.2,w:.88,h:.28,fontSize:8,color:C.W});
-          });
-          if(g.tev){
-            const ox=toX(g.tev),lh=ranges.length*(rh+rg);
-            s.addShape(pptx.ShapeType.line,{x:ox,y:cy0+.1,w:0,h:lh,line:{color:C.G2,pt:1.5,dashType:'dash'}});
-            s.addText('Offer: $'+g.tev.toLocaleString()+'M',{x:ox-.95,y:cy0-.3,w:1.9,h:.25,fontSize:8.5,bold:true,color:C.G2,align:'center'});
-          }
-          for(let i=0;i<=5;i++){
-            const val=gmin+i/5*(gmax-gmin),tx=cx0+i/5*cw;
-            s.addText('$'+Math.round(val).toLocaleString()+'M',{x:tx-.42,y:cy0+ranges.length*(rh+rg)+.08,w:.84,h:.22,fontSize:7.5,color:C.GR,align:'center'});
-          }
-          break;
-        }
-
-        case 'synergies':{
-          hdr(s,'Synergy Analysis',g.acq+' / '+g.tgt+' — Cost & Revenue Synergies');
-          const costRows=(sl.cost||[]).filter(r=>r.label&&r.val);
-          const revRows=(sl.rev||[]).filter(r=>r.label&&r.val);
-          const totalCost=costRows.reduce((a,r)=>a+parseFloat(r.val)||0,0);
-          const totalRev=revRows.reduce((a,r)=>a+parseFloat(r.val)||0,0);
-          const total=totalCost+totalRev;
-          if(sl.chartType==='Waterfall'&&costRows.length){
-            const items=[...costRows.map(r=>({l:r.label,v:parseFloat(r.val)||0,col:C.GN})),...revRows.map(r=>({l:r.label,v:parseFloat(r.val)||0,col:C.BL})),{l:'Total',v:total,col:C.G}];
-            s.addChart(pptx.ChartType.bar,[{name:'Synergies ($M)',labels:items.map(r=>r.l),values:items.map(r=>r.v)}],{x:.55,y:1.28,w:9,h:5.2,barDir:'col',chartColors:items.map(r=>r.col),showValue:true,dataLabelFontSize:9,catAxisLabelFontSize:9,showLegend:false});
-          }else{
-            const thO={bold:true,color:'000000',fill:{color:C.G}};
-            const td=[[{text:'Category',options:thO},{text:'Type',options:thO},{text:'Value ($M)',options:thO}],
-              ...costRows.map((r,i)=>[{text:r.label,options:{color:C.W,fill:{color:i%2===0?C.N3:'142230'}}},{text:'Cost',options:{color:C.GN,fill:{color:i%2===0?C.N3:'142230'}}},{text:'$'+r.val+'M',options:{color:C.W,fill:{color:i%2===0?C.N3:'142230'}}}]),
-              ...revRows.map((r,i)=>[{text:r.label,options:{color:C.W,fill:{color:(i+costRows.length)%2===0?C.N3:'142230'}}},{text:'Revenue',options:{color:C.BL,fill:{color:(i+costRows.length)%2===0?C.N3:'142230'}}},{text:'$'+r.val+'M',options:{color:C.W,fill:{color:(i+costRows.length)%2===0?C.N3:'142230'}}}]),
-              [{text:'Total Synergies',options:{bold:true,color:C.G2,fill:{color:C.N2}}},{text:'',options:{fill:{color:C.N2}}},{text:'$'+total.toFixed(0)+'M',options:{bold:true,color:C.G2,fill:{color:C.N2}}}]
-            ];
-            s.addTable(td,{x:.55,y:1.28,w:8,colW:[4.5,1.8,1.7],border:{pt:.5,color:C.G},fontSize:11,fontFace:'Segoe UI'});
-          }
-          [['Cost Synergies','$'+totalCost.toFixed(0)+'M',C.GN],['Revenue Synergies','$'+totalRev.toFixed(0)+'M',C.BL],['Total Synergies','$'+total.toFixed(0)+'M',C.G]].forEach(([l,v2,col],i)=>{
-            const bx=9.8,by=1.28+i*1.55;
-            s.addShape(pptx.ShapeType.rect,{x:bx,y:by,w:2.9,h:1.25,fill:{color:C.N3},line:{color:col,pt:1}});
-            s.addText(v2,{x:bx,y:by+.05,w:2.9,h:.7,fontSize:20,bold:true,color:C.W,align:'center'});
-            s.addText(l.toUpperCase(),{x:bx,y:by+.72,w:2.9,h:.3,fontSize:7.5,color:col,align:'center',charSpacing:1});
-          });
-          break;
-        }
-
-        case 'lbo':{
-          hdr(s,'LBO Returns Analysis',g.tgt+' — Sponsor Economics');
-          const entry=parseFloat(sl.entry)||0,exit=parseFloat(sl.exit)||0,hold=parseFloat(sl.hold)||5,debt=parseFloat(sl.debt)||0,equity=parseFloat(sl.equity)||0;
-          const ebitda=g.ebitda;
-          const entryEV=entry&&ebitda?entry*ebitda:g.tev;
-          const exitEV=exit&&ebitda?exit*ebitda:0;
-          const debtAmt=debt&&ebitda?debt*ebitda:0;
-          const exitEq=exitEV?Math.max(exitEV-debtAmt,0):0;
-          const mom=equity&&exitEq?exitEq/equity:0;
-          const irr=mom&&hold?(Math.pow(mom,1/hold)-1)*100:0;
-          [['Entry Multiple',entry?entry.toFixed(1)+'x EV/EBITDA':'—'],['Exit Multiple',exit?exit.toFixed(1)+'x EV/EBITDA':'—'],['Hold Period',hold+'y'],['Entry EV',entryEV?fmt(entryEV):'—'],['Equity Invested',equity?fmt(equity):'—'],['Est. MoM Return',mom?mom.toFixed(2)+'x':'—'],['Est. IRR',irr?irr.toFixed(1)+'%':'—']].forEach(([l,v2],i)=>{
-            box(s,.55+Math.floor(i/2)*3.38,1.4+i%2*1.6,3.1,1.3,l,v2,i>=5?C.G:undefined);
-          });
-          s.addText('Indicative estimates based on entry/exit multiples and equity contribution. Actual returns subject to debt schedule, working capital, and market conditions.',{x:.55,y:6.7,w:12.1,h:.35,fontSize:8,color:C.GR,italic:true});
-          break;
-        }
-
-        case 'deal_str':{
-          hdr(s,'Deal Structure & Financing',g.acq+' / '+g.tgt);
-          const cash=parseFloat(sl.cashPct)||0,stk=parseFloat(sl.stockPct)||0,dbt=parseFloat(sl.debtAmt)||0,eqt=parseFloat(sl.equityAmt)||0;
-          if((cash||stk)&&sl.chartType==='Pie'){
-            const lbls=[],vals=[];
-            if(cash){lbls.push('Cash ('+cash+'%)');vals.push(cash);}
-            if(stk){lbls.push('Stock ('+stk+'%)');vals.push(stk);}
-            s.addChart(pptx.ChartType.pie,[{name:'Consideration',labels:lbls,values:vals}],{x:.55,y:1.28,w:5.5,h:4.8,chartColors:[C.G,C.BL],showLegend:true,legendPos:'b',showLabel:true,showPercent:true,dataLabelFontSize:11});
-          }
-          const thO={bold:true,color:'000000',fill:{color:C.G}};
-          const info=[['Consideration Type',g.cons],['Enterprise Value',fmt(g.tev)],['Equity Value',g.shr&&g.offer?'$'+Math.round(g.shr*g.offer).toLocaleString()+'M':'—'],['Debt Financing',dbt?fmt(dbt):'—'],['Equity Financing',eqt?fmt(eqt):'—'],['Expected Close',fmtD(g.close)]];
-          const td=[[{text:'Parameter',options:thO},{text:'Detail',options:thO}],...info.map(([a,b],i)=>[{text:a,options:{color:C.GR,fill:{color:i%2===0?C.N3:'142230'}}},{text:b,options:{color:C.W,fill:{color:i%2===0?C.N3:'142230'}}}])];
-          s.addTable(td,{x:6.5,y:1.28,w:6.15,border:{pt:.5,color:C.G},fontSize:11,fontFace:'Segoe UI'});
-          break;
-        }
-
-        case 'timeline':{
-          hdr(s,'Indicative Transaction Timeline',g.acq+' / '+g.tgt+' — Path to Close');
-          [{label:'Phase I',title:'Signing & Announcement',desc:'Definitive agreement signed, transaction announced publicly, financing committed by lenders',week:'Week 0',col:C.G},{label:'Phase II',title:'Regulatory & Shareholder',desc:'HSR/competition filings submitted, shareholder proxy distributed, regulatory review underway',week:'Weeks 2–8',col:C.BL},{label:'Phase III',title:'Due Diligence & Integration Planning',desc:'Confirmatory due diligence completed, integration workstreams initiated across all business functions',week:'Weeks 4–12',col:C.PR},{label:'Phase IV',title:'Closing',desc:'All regulatory clearances received, closing conditions satisfied, transaction closes and consideration paid',week:'Weeks 12–20',col:C.GN}].forEach((ph,i)=>{
-            const py=1.38+i*1.32;
-            s.addShape(pptx.ShapeType.rect,{x:.55,y:py,w:1.55,h:.58,fill:{color:ph.col},line:{color:ph.col},rectRadius:.04});
-            s.addText(ph.label,{x:.55,y:py,w:1.55,h:.58,fontSize:10,bold:true,color:C.N,align:'center',valign:'middle'});
-            s.addText(ph.week,{x:2.22,y:py,w:1.35,h:.58,fontSize:9,bold:true,color:ph.col,valign:'middle'});
-            s.addShape(pptx.ShapeType.rect,{x:3.7,y:py,w:8.95,h:.56,fill:{color:C.N3},line:{color:ph.col,pt:.5}});
-            s.addText(ph.title,{x:3.88,y:py+.03,w:8.6,h:.26,fontSize:10,bold:true,color:C.W});
-            s.addText(ph.desc,{x:3.88,y:py+.3,w:8.6,h:.22,fontSize:8.5,color:C.GR});
-            if(i<3)s.addShape(pptx.ShapeType.line,{x:1.32,y:py+.58,w:0,h:.74,line:{color:C.GR,pt:.8,dashType:'sysDot'}});
-          });
-          s.addShape(pptx.ShapeType.rect,{x:.55,y:6.72,w:12.1,h:.025,fill:{color:C.G},line:{color:C.G}});
-          s.addText('Announcement: '+fmtD(g.ann)+'   ·   Expected Close: '+fmtD(g.close)+'   ·   '+g.bank+' — '+g.role,{x:.55,y:6.78,w:12.1,h:.24,fontSize:9,color:C.G2,align:'center'});
-          break;
-        }
-
-        case 'risks':{
-          hdr(s,'Risk Factors',g.tgt+' — Key Risks & Mitigants');
-          const rows=(sl.rows||[]).filter(r=>r.risk);
-          const thO={bold:true,color:'000000',fill:{color:C.G}};
-          const td=[[{text:'Risk Factor',options:thO},{text:'Mitigant',options:thO},{text:'Severity',options:thO}],
-            ...rows.map((r,i)=>[{text:r.risk,options:{bold:true,color:C.W,fill:{color:i%2===0?C.N3:'142230'}}},{text:r.mit||'—',options:{color:C.GR,fill:{color:i%2===0?C.N3:'142230'}}},{text:r.sev||'Medium',options:{color:r.sev==='High'?'FF6B6B':r.sev==='Low'?C.GN:C.G2,bold:true,fill:{color:i%2===0?C.N3:'142230'}}}])
-          ];
-          s.addTable(td,{x:.55,y:1.28,w:12.1,colW:[5,5.5,1.6],border:{pt:.5,color:C.G},fontSize:10,fontFace:'Segoe UI'});
-          break;
-        }
-
-        case 'custom':{
-          const cd=sl.customData;
-          if(!cd){hdr(s,'Custom Slide','Generate from the AI tab');break;}
-          hdr(s,cd.title||'Custom Slide',cd.subtitle||'');
-          if(cd.type==='bullets'&&cd.content?.items){
-            let y=1.4;
-            cd.content.items.forEach(item=>{
-              s.addShape(pptx.ShapeType.rect,{x:.55,y,w:12.1,h:.68,fill:{color:C.N3},line:{color:C.G,pt:.5}});
-              s.addShape(pptx.ShapeType.rect,{x:.55,y,w:.2,h:.68,fill:{color:C.G},line:{color:C.G}});
-              s.addText(item,{x:.82,y:y+.08,w:11.7,h:.5,fontSize:11,color:C.W,valign:'middle'});
-              y+=.78;
+      // Try pie chart if cash/stock split is parseable
+      let pieDrawn=false;
+      if(g.cons){
+        const cashMatch=g.cons.match(/(\d+)%\s*[Cc]ash/);
+        if(cashMatch){
+          const cashPct=parseFloat(cashMatch[1]);
+          const stPct=100-cashPct;
+          if(cashPct>0&&cashPct<100){
+            sl.addChart(pptx.ChartType.pie,[{name:'Consideration',labels:['Cash','Stock'],values:[cashPct,stPct]}],{
+              x:0.4,y:2.52,w:4.8,h:4.55,
+              chartColors:[C.G,C.BL],
+              showLegend:true,legendPos:'r',legendFontSize:10,
+              showValue:true,dataLabelFontSize:11,dataLabelColor:C.W,
+              plotAreaBkgdColor:C.N,chartAreaBkgdColor:C.N,
             });
-          }else if(cd.type==='table'&&cd.content?.headers){
-            const thO={bold:true,color:'000000',fill:{color:C.G}};
-            const td=[[...cd.content.headers.map(h=>({text:h,options:thO}))],
-              ...cd.content.rows.map((row,i)=>row.map(cell=>({text:cell,options:{color:C.W,fill:{color:i%2===0?C.N3:'142230'}}})))];
-            s.addTable(td,{x:.55,y:1.28,w:12.1,border:{pt:.5,color:C.G},fontSize:10,fontFace:'Segoe UI'});
-          }else if(cd.type==='two_col'&&cd.content){
-            const c=cd.content;
-            ['left','right'].forEach((side,i)=>{
-              const x=.55+i*6.3,col=i===0?C.BL:C.G;
-              s.addShape(pptx.ShapeType.rect,{x,y:1.28,w:5.9,h:.38,fill:{color:col},line:{color:col}});
-              s.addText(c[side+'_title']||'',{x,y:1.28,w:5.9,h:.38,fontSize:11,bold:true,color:C.N,align:'center',valign:'middle'});
-              (c[side+'_items']||[]).forEach((item,j)=>{
-                s.addShape(pptx.ShapeType.rect,{x,y:1.76+j*.74,w:5.9,h:.62,fill:{color:C.N3},line:{color:col,pt:.5}});
-                s.addText('• '+item,{x:x+.12,y:1.82+j*.74,w:5.65,h:.5,fontSize:10,color:C.W,valign:'middle'});
-              });
-            });
-          }else if(cd.type==='metrics'&&cd.content?.items){
-            cd.content.items.forEach((item,i)=>{
-              box(s,.55+(i%3)*4.08,1.4+Math.floor(i/3)*2.1,3.8,1.6,item.label,item.value);
-              if(item.sub)s.addText(item.sub,{x:.55+(i%3)*4.08,y:1.4+Math.floor(i/3)*2.1+1.28,w:3.8,h:.28,fontSize:8.5,color:C.GR,align:'center'});
-            });
+            pieDrawn=true;
           }
-          if(cd.footnote)s.addText(cd.footnote,{x:.55,y:6.8,w:12.1,h:.22,fontSize:7.5,color:C.GR,italic:true});
-          break;
+        }
+      }
+      if(!pieDrawn){
+        sl.addText('Consideration Mix',{x:0.4,y:3.1,w:4.8,h:0.28,fontSize:10,bold:true,color:C.GR,fontFace:'Calibri',align:'center'});
+        sl.addText(g.cons||'See Deal Setup',{x:0.4,y:3.5,w:4.8,h:0.5,fontSize:13,bold:true,color:C.G2,fontFace:'Calibri',align:'center'});
+      }
+
+      // Structure detail panel
+      const panelX=5.5;
+      sl.addShape(pptx.ShapeType.rect,{x:panelX,y:2.52,w:7.43,h:0.28,fill:{color:C.N3}});
+      sl.addText('TRANSACTION STRUCTURE',{x:panelX,y:2.55,w:7.43,h:0.22,fontSize:7.5,bold:true,color:C.G,fontFace:'Calibri',charSpacing:1.5});
+      const strLines=[
+        ['Acquirer',       g.acq],
+        ['Target',         g.tgt],
+        ['Transaction Type',g.dtype],
+        ['Consideration',  g.cons||'—'],
+        ['Synergies',      g.syn?fmtM(g.syn):'—'],
+        ['Advisor',        `${g.bank} (${g.role})`],
+        ['Announcement',   g.ann||'—'],
+        ['Expected Close', g.close||'—'],
+      ];
+      const fin=s.rows&&s.rows[0]?s.rows[0].fin||'':'';
+      if(fin)strLines.push(['Financing',fin]);
+      strLines.forEach((row,i)=>{
+        const yy=2.88+i*0.46;
+        sl.addShape(pptx.ShapeType.rect,{x:panelX,y:yy,w:7.43,h:0.42,fill:{color:i%2===0?C.N:C.N3}});
+        sl.addText(row[0],{x:panelX+0.1,y:yy+0.1,w:2.2,h:0.26,fontSize:8.5,color:C.GR,fontFace:'Calibri'});
+        sl.addText(row[1],{x:panelX+2.4,y:yy+0.1,w:4.9,h:0.26,fontSize:8.5,bold:true,color:C.W,fontFace:'Calibri'});
+      });
+    }
+
+    else if(s.typeId==='comps'){
+      hdr(sl,'Trading Comps Analysis',`${g.ind} — Comparable Public Companies`);
+      const cols=['Company','EV/Revenue','EV/EBITDA','P/E','Rev Growth','EBITDA Margin'];
+      const colW=[3.2,1.65,1.65,1.4,1.6,1.73];
+      let xo=0.3;
+      // Header row
+      cols.forEach((col,ci)=>{
+        sl.addShape(pptx.ShapeType.rect,{x:xo,y:1.32,w:colW[ci],h:0.3,fill:{color:C.G}});
+        sl.addText(col,{x:xo+0.05,y:1.35,w:colW[ci]-0.1,h:0.24,fontSize:8,bold:true,color:C.N,fontFace:'Calibri',align:ci===0?'left':'center'});
+        xo+=colW[ci];
+      });
+      // Data rows
+      s.rows.forEach((r,ri)=>{
+        const isMedian=r.co==='Median'||r.co==='Mean';
+        const yy=1.66+ri*0.44;
+        let xr=0.3;
+        const vals=[r.co,r.ev_rev,r.ev_ebitda,r.pe,r.rev_g,r.margin];
+        colW.forEach((w,ci)=>{
+          const bg=isMedian?C.N3:(ri%2===0?C.N:C.N2);
+          sl.addShape(pptx.ShapeType.rect,{x:xr,y:yy,w:w,h:0.4,fill:{color:bg},
+            line:isMedian?{color:C.G,width:0.5}:{color:'transparent',width:0}});
+          sl.addText(vals[ci]||'—',{x:xr+0.06,y:yy+0.09,w:w-0.12,h:0.24,
+            fontSize:ci===0?8.5:9,bold:isMedian,
+            color:isMedian&&ci>0?C.G2:ci===0?C.W:C.GR,
+            fontFace:'Calibri',align:ci===0?'left':'center'});
+          xr+=w;
+        });
+      });
+      // Implied valuation footnote
+      const medRow=s.rows.find(r=>r.co==='Median'||r.co==='Mean');
+      if(medRow&&medRow.ev_ebitda&&g.ebitda){
+        const mult=parseFloat(medRow.ev_ebitda);
+        if(!isNaN(mult)){
+          const impliedEV=mult*g.ebitda;
+          sl.addText(
+            `Implied TEV at median EV/EBITDA (${medRow.ev_ebitda}): ${fmtM(impliedEV)} vs. transaction value of ${g.tev?fmtM(g.tev):'—'}`,
+            {x:0.3,y:7.05,w:12.7,h:0.22,fontSize:7.5,color:C.G2,fontFace:'Calibri',italic:true});
+        }
+      } else {
+        sl.addText('Source: SEC EDGAR / Capital IQ. Multiples as of latest available filings.',
+          {x:0.3,y:7.05,w:12.7,h:0.22,fontSize:7.5,color:C.GR,fontFace:'Calibri',italic:true});
+      }
+    }
+
+    // ══════════════════════════════ 9. PRECEDENT TRANSACTIONS ══
+    else if(s.typeId==='prec_tx'){
+      hdr(sl,'Precedent Transactions',`${g.ind} — Selected M&A Transactions`);
+      const cols=['Date','Buyer','Target','EV ($M)','EV/EBITDA','Premium'];
+      const colW=[1.35,2.7,2.7,1.6,1.6,1.48];
+      let xo=0.3;
+      cols.forEach((col,ci)=>{
+        sl.addShape(pptx.ShapeType.rect,{x:xo,y:1.32,w:colW[ci],h:0.3,fill:{color:C.G}});
+        sl.addText(col,{x:xo+0.05,y:1.35,w:colW[ci]-0.1,h:0.24,fontSize:8,bold:true,color:C.N,fontFace:'Calibri',align:ci<3?'left':'center'});
+        xo+=colW[ci];
+      });
+      s.rows.forEach((r,ri)=>{
+        const yy=1.66+ri*0.56;
+        let xr=0.3;
+        const vals=[r.date,r.buyer,r.target,r.ev,r.ev_ebitda,r.prem];
+        colW.forEach((w,ci)=>{
+          sl.addShape(pptx.ShapeType.rect,{x:xr,y:yy,w:w,h:0.52,fill:{color:ri%2===0?C.N:C.N2}});
+          sl.addText(vals[ci]||'—',{x:xr+0.06,y:yy+0.13,w:w-0.12,h:0.28,fontSize:8.5,
+            color:ci===0?C.GR:C.W,fontFace:'Calibri',align:ci<3?'left':'center'});
+          xr+=w;
+        });
+      });
+      if(g.tev){
+        sl.addText(
+          `Current Transaction: ${g.acq} / ${g.tgt} — TEV ${fmtM(g.tev)}${g.ebitda?` | EV/EBITDA ${fmt(g.tev/g.ebitda,1)}x`:''}`,
+          {x:0.3,y:7.05,w:12.7,h:0.22,fontSize:7.5,color:C.G2,fontFace:'Calibri',italic:true});
+      }
+    }
+
+    // ══════════════════════════════════════ 10. FOOTBALL FIELD ══
+    else if(s.typeId==='ff'){
+      hdr(sl,'Valuation Summary — Football Field',`${g.tgt} — Implied Enterprise Value Range ($M)`);
+      const methods=[
+        {label:'DCF Analysis',       lo:g.dcfl, hi:g.dcfh, color:C.G},
+        {label:'Trading Comps',      lo:g.tcl,  hi:g.tch,  color:C.BL},
+        {label:'Precedent Tx',       lo:g.ptl,  hi:g.pth,  color:C.PR},
+        {label:'LBO Analysis',       lo:g.lbol, hi:g.lboh, color:C.GR},
+      ].filter(m=>m.lo&&m.hi);
+
+      if(!methods.length){
+        sl.addText('Enter Football Field ranges in Deal Setup to populate this slide.',
+          {x:0.5,y:3.5,w:12,h:0.5,fontSize:12,color:C.GR,fontFace:'Calibri',align:'center'});
+      } else {
+        const allVals=[...methods.map(m=>m.lo),...methods.map(m=>m.hi),g.tev].filter(Boolean);
+        const minV=Math.min(...allVals)*0.88;
+        const maxV=Math.max(...allVals)*1.06;
+        const range=maxV-minV;
+        const chartX=2.9,chartW=9.8,rowH=0.88;
+
+        methods.forEach((m,i)=>{
+          const yy=1.55+i*1.18;
+          const barX=chartX+((m.lo-minV)/range)*chartW;
+          const barW=Math.max(((m.hi-m.lo)/range)*chartW,0.12);
+          // Background track
+          sl.addShape(pptx.ShapeType.rect,{x:chartX,y:yy+0.08,w:chartW,h:rowH-0.16,fill:{color:C.N3}});
+          // Colour bar
+          sl.addShape(pptx.ShapeType.rect,{x:barX,y:yy+0.18,w:barW,h:rowH-0.36,fill:{color:m.color}});
+          // Labels
+          sl.addText(m.label,{x:0.3,y:yy+0.26,w:2.5,h:0.32,fontSize:9,bold:true,color:C.W,fontFace:'Calibri',align:'right'});
+          sl.addText(fmtM(m.lo),{x:barX-0.75,y:yy+0.28,w:0.82,h:0.24,fontSize:7.5,color:C.GR,fontFace:'Calibri',align:'right'});
+          sl.addText(fmtM(m.hi),{x:barX+barW+0.04,y:yy+0.28,w:0.82,h:0.24,fontSize:7.5,color:C.GR,fontFace:'Calibri'});
+        });
+
+        // Transaction value dashed line
+        if(g.tev){
+          const tvX=chartX+((g.tev-minV)/range)*chartW;
+          sl.addShape(pptx.ShapeType.line,{x:tvX,y:1.42,w:0,h:methods.length*1.18+0.22,
+            line:{color:C.G2,width:1.5,dashType:'dash'}});
+          sl.addText(`Transaction\n${fmtM(g.tev)}`,{x:tvX-0.8,y:1.22,w:1.6,h:0.36,
+            fontSize:7.5,bold:true,color:C.G2,fontFace:'Calibri',align:'center'});
+        }
+        sl.addText('Note: Valuation ranges are illustrative and for discussion purposes only.',
+          {x:0.3,y:7.05,w:12.7,h:0.22,fontSize:7.5,color:C.GR,fontFace:'Calibri',italic:true});
+      }
+    }
+
+    // ══════════════════════════════════════ 11. SYNERGIES ══
+    else if(s.typeId==='synergies'){
+      hdr(sl,'Synergy Analysis',`${g.acq} / ${g.tgt} — Cost & Revenue Synergies`);
+      if(s.rows.length){
+        const nonTotal=s.rows.filter(r=>r.cat!=='Total');
+        const totalRow=s.rows.find(r=>r.cat==='Total');
+        const labels=['Year 1','Year 2','Year 3'];
+        const chartData=nonTotal.map(r=>({
+          name:r.cat,labels,
+          values:[parseFloat(r.yr1)||0,parseFloat(r.yr2)||0,parseFloat(r.yr3)||0],
+        }));
+        if(chartData.length){
+          sl.addChart(pptx.ChartType.bar,chartData,{
+            x:0.4,y:1.25,w:7.6,h:5.75,
+            barDir:'col',barGrouping:'stacked',
+            chartColors:[C.G,'2E86AB',C.PR,C.GN],
+            showLegend:true,legendPos:'b',legendFontSize:9,
+            showValue:true,dataLabelFontSize:8.5,dataLabelColor:C.W,
+            plotAreaBkgdColor:C.N2,chartAreaBkgdColor:C.N,
+            valGridLine:{style:'none'},
+          });
+        }
+        // Right table
+        sl.addShape(pptx.ShapeType.rect,{x:8.2,y:1.25,w:4.83,h:0.28,fill:{color:C.G}});
+        sl.addText('SYNERGY DETAIL ($M)',{x:8.2,y:1.28,w:4.83,h:0.22,fontSize:8,bold:true,color:C.N,fontFace:'Calibri',charSpacing:1.5,align:'center'});
+        const tcols=['Category','Yr 1','Yr 2','Yr 3'];
+        const tw=[2.3,0.84,0.84,0.85];
+        let txo=8.2;
+        tcols.forEach((h,ci)=>{sl.addText(h,{x:txo,y:1.6,w:tw[ci],h:0.22,fontSize:7.5,bold:true,color:C.GR,fontFace:'Calibri',align:ci===0?'left':'center'});txo+=tw[ci];});
+        s.rows.forEach((r,ri)=>{
+          const isTot=r.cat==='Total';
+          const yy=1.88+ri*0.46;
+          sl.addShape(pptx.ShapeType.rect,{x:8.2,y:yy,w:4.83,h:0.42,fill:{color:isTot?C.N3:ri%2===0?C.N:C.N2},
+            line:isTot?{color:C.G,width:0.5}:{color:'transparent',width:0}});
+          let rx=8.2;
+          [r.cat,r.yr1,r.yr2,r.yr3].forEach((val,ci)=>{
+            sl.addText(val||'—',{x:rx+0.05,y:yy+0.1,w:tw[ci]-0.1,h:0.24,
+              fontSize:8.5,bold:isTot,
+              color:isTot&&ci>0?C.G2:ci===0?C.W:C.GR,
+              fontFace:'Calibri',align:ci===0?'left':'center'});
+            rx+=tw[ci];
+          });
+        });
+        if(totalRow){
+          sl.addText(
+            `Total run-rate synergies of $${totalRow.yr3}M expected to be fully realised by Year 3 post-close`,
+            {x:0.4,y:7.05,w:12.5,h:0.22,fontSize:7.5,color:C.G2,fontFace:'Calibri',italic:true});
         }
       }
     }
 
-    const fn=(g.acq||'Acquirer').replace(/\s+/g,'-')+'_'+(g.tgt||'Target').replace(/\s+/g,'-')+'_PitchBook';
-    await pptx.writeFile({fileName:fn});
-    showToast('✓ Pitch book downloaded');
-  }catch(e){
-    showToast('Error: '+e.message);
-    console.error(e);
-  }
-  btn.disabled=false;btn.textContent='⬇ Generate & Download Pitch Book';
-}
+    // ══════════════════════════════════════ 12. LBO RETURNS ══
+    else if(s.typeId==='lbo'){
+      hdr(sl,'LBO Returns Analysis',`${g.tgt} — Illustrative Sponsor Returns`);
+      const r=s.rows&&s.rows[0]?s.rows[0]:{};
+      const entryEV=parseFloat((r.ev||'').replace(/,/g,''))||g.tev||0;
+      const lev=parseFloat(r.lev)||6.5;
+      const exitMult=parseFloat(r.exit)||12.0;
+      const ebitda=g.ebitda||0;
 
-// ── TOAST ──────────────────────────────────────────────────────────────────
-function showToast(msg,dur=3000){
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),dur);
-}
+      metaBox(sl,0.4,1.25,3.0,'Entry EV',entryEV?fmtM(entryEV):'—','Enterprise Value');
+      metaBox(sl,3.55,1.25,3.0,'Entry Leverage',`${fmt(lev,1)}x`,'Debt / EBITDA');
+      metaBox(sl,6.7,1.25,3.0,'Exit Multiple',`${fmt(exitMult,1)}x`,'EV / EBITDA');
+      metaBox(sl,9.85,1.25,3.08,'Hold Period','5 Years','Illustrative');
 
-// ── INIT ───────────────────────────────────────────────────────────────────
+      // Sensitivity grid header
+      sl.addShape(pptx.ShapeType.rect,{x:0.4,y:2.52,w:12.53,h:0.28,fill:{color:C.N3}});
+      sl.addText('IRR SENSITIVITY — Hold Period vs. Exit Multiple',
+        {x:0.4,y:2.55,w:12.53,h:0.22,fontSize:8,bold:true,color:C.G,fontFace:'Calibri',charSpacing:1.5,align:'center'});
+
+      const holds=[3,4,5];
+      const exits=[9,10,11,12,13,14];
+      const colW2=1.76;
+
+      if(ebitda&&entryEV){
+        const debtAmt=lev*ebitda;
+        const equity=Math.max(entryEV-debtAmt,1);
+
+        // Exit multiple header row
+        sl.addShape(pptx.ShapeType.rect,{x:0.4,y:2.88,w:colW2,h:0.3,fill:{color:C.N3}});
+        sl.addText('Hold \\ Exit →',{x:0.4,y:2.9,w:colW2,h:0.26,fontSize:7.5,color:C.GR,fontFace:'Calibri',align:'center'});
+        exits.forEach((ex,ei)=>{
+          sl.addShape(pptx.ShapeType.rect,{x:0.4+(ei+1)*colW2,y:2.88,w:colW2,h:0.3,fill:{color:C.G}});
+          sl.addText(`${ex}x`,{x:0.4+(ei+1)*colW2,y:2.9,w:colW2,h:0.26,fontSize:8.5,bold:true,color:C.N,fontFace:'Calibri',align:'center'});
+        });
+
+        holds.forEach((hp,hi)=>{
+          const yy=3.24+hi*0.88;
+          // Hold period label
+          sl.addShape(pptx.ShapeType.rect,{x:0.4,y:yy,w:colW2,h:0.8,fill:{color:C.N3}});
+          sl.addText(`${hp} Year\nHold`,{x:0.4,y:yy+0.18,w:colW2,h:0.46,fontSize:9,bold:true,color:C.W,fontFace:'Calibri',align:'center'});
+          exits.forEach((ex,ei)=>{
+            const exitEV=ebitda*ex;
+            const exitEq=Math.max(exitEV-debtAmt,0);
+            const irr=(Math.pow(exitEq/equity,1/hp)-1)*100;
+            const mom=exitEq/equity;
+            const irrColor=irr>25?C.GN:irr>18?C.G:irr>12?C.GR:C.RD;
+            sl.addShape(pptx.ShapeType.rect,{x:0.4+(ei+1)*colW2,y:yy,w:colW2,h:0.8,fill:{color:ei%2===0?C.N:C.N2}});
+            sl.addText(`${fmt(irr,1)}% IRR`,{x:0.4+(ei+1)*colW2,y:yy+0.06,w:colW2,h:0.34,fontSize:11,bold:true,color:irrColor,fontFace:'Calibri',align:'center'});
+            sl.addText(`${fmt(mom,1)}x MoM`,{x:0.4+(ei+1)*colW2,y:yy+0.44,w:colW2,h:0.24,fontSize:7.5,color:C.GR,fontFace:'Calibri',align:'center'});
+          });
+        });
+      } else {
+        sl.addText('Enter Entry EV and EBITDA in Deal Setup / LBO slide to populate the sensitivity table.',
+          {x:0.4,y:4.0,w:12.5,h:0.5,fontSize:11,color:C.GR,fontFace:'Calibri',align:'center'});
+      }
+      sl.addText('Illustrative analysis only. Assumes no additional debt paydown beyond interest. Tax and fees excluded.',
+        {x:0.4,y:7.05,w:12.5,h:0.22,fontSize:7.5,color:C.GR,fontFace:'Calibri',italic:true});
+    }
+
+    // ══════════════════════════════════════ 13. TIMELINE ══
+    else if(s.typeId==='timeline'){
+      hdr(sl,'Indicative Process Timeline',`${g.acq} / ${g.tgt} — Path to Close`);
+      const milestones=[
+        {label:'Transaction\nAnnounced',     sub:g.ann||'Week 0',    color:C.G},
+        {label:'Regulatory\nFilings',        sub:'Weeks 2–4',        color:C.BL},
+        {label:'HSR / Regulatory\nReview',   sub:'Weeks 4–10',       color:C.PR},
+        {label:'Proxy Statement\nFiled',     sub:'Weeks 6–8',        color:C.GR},
+        {label:'Shareholder\nVote',          sub:'Weeks 10–12',      color:C.G},
+        {label:'Regulatory\nApprovals',      sub:'Weeks 10–14',      color:C.BL},
+        {label:'Transaction\nClose',         sub:g.close||'Week 12–16', color:C.GN},
+      ];
+      const lineY=4.0;
+      const lineX=0.7,lineW=12.0;
+      sl.addShape(pptx.ShapeType.line,{x:lineX,y:lineY,w:lineW,h:0,line:{color:C.G,width:2}});
+      const step=lineW/(milestones.length-1);
+      milestones.forEach((m,i)=>{
+        const mx=lineX+i*step;
+        const above=i%2===0;
+        // Dot
+        sl.addShape(pptx.ShapeType.ellipse,{x:mx-0.13,y:lineY-0.13,w:0.26,h:0.26,fill:{color:m.color},line:{color:m.color,width:0}});
+        // Connector line
+        sl.addShape(pptx.ShapeType.line,{x:mx,y:above?lineY-0.13:lineY+0.13,w:0,h:above?-1.05:1.05,line:{color:C.GR,width:0.75,dashType:'dash'}});
+        // Label
+        const ty=above?lineY-1.42:lineY+0.22;
+        sl.addText(m.label,{x:mx-0.75,y:ty,w:1.5,h:0.55,fontSize:7.5,color:C.W,fontFace:'Calibri',align:'center',wrap:true});
+        sl.addText(m.sub,{x:mx-0.75,y:ty+0.58,w:1.5,h:0.22,fontSize:7,bold:true,color:m.color,fontFace:'Calibri',align:'center'});
+      });
+      sl.addText('Timeline is indicative only and subject to regulatory approval and customary closing conditions.',
+        {x:0.4,y:7.05,w:12.5,h:0.22,fontSize:7.5,color:C.GR,fontFace:'Calibri',italic:true,align:'center'});
+    }
+
+    // ══════════════════════════════════════ 14. RISK FACTORS ══
+    else if(s.typeId==='risks'){
+      hdr(sl,'Risk Factors & Mitigants',`${g.tgt} — Key Transaction Risks`);
+      // Column headers
+      sl.addShape(pptx.ShapeType.rect,{x:0.4,y:1.32,w:6.05,h:0.28,fill:{color:C.RD}});
+      sl.addText('RISK FACTOR',{x:0.4,y:1.35,w:6.05,h:0.22,fontSize:8,bold:true,color:C.W,fontFace:'Calibri',charSpacing:1.5,align:'center'});
+      sl.addShape(pptx.ShapeType.rect,{x:6.7,y:1.32,w:6.23,h:0.28,fill:{color:C.GN}});
+      sl.addText('MITIGATING FACTOR',{x:6.7,y:1.35,w:6.23,h:0.22,fontSize:8,bold:true,color:C.W,fontFace:'Calibri',charSpacing:1.5,align:'center'});
+
+      const rowH=Math.min(1.08,(7.2-1.64)/Math.max(s.rows.length,1));
+      s.rows.forEach((r,ri)=>{
+        const yy=1.66+ri*rowH;
+        const rh=rowH-0.06;
+        // Risk cell
+        sl.addShape(pptx.ShapeType.rect,{x:0.4,y:yy,w:6.05,h:rh,fill:{color:ri%2===0?C.N2:C.N3},line:{color:C.RD,width:0.5}});
+        sl.addShape(pptx.ShapeType.rect,{x:0.4,y:yy,w:0.1,h:rh,fill:{color:C.RD}});
+        sl.addText(r.risk||'',{x:0.58,y:yy+0.08,w:5.78,h:rh-0.16,fontSize:8.5,color:C.W,fontFace:'Calibri',wrap:true});
+        // Arrow
+        sl.addShape(pptx.ShapeType.rect,{x:6.2,y:yy+(rh/2)-0.17,w:0.36,h:0.34,fill:{color:C.N3}});
+        sl.addText('→',{x:6.2,y:yy+(rh/2)-0.17,w:0.36,h:0.34,fontSize:13,color:C.G,fontFace:'Calibri',align:'center'});
+        // Mitigant cell
+        sl.addShape(pptx.ShapeType.rect,{x:6.7,y:yy,w:6.23,h:rh,fill:{color:ri%2===0?C.N2:C.N3},line:{color:C.GN,width:0.5}});
+        sl.addShape(pptx.ShapeType.rect,{x:6.7,y:yy,w:0.1,h:rh,fill:{color:C.GN}});
+        sl.addText(r.mitigant||'',{x:6.88,y:yy+0.08,w:5.96,h:rh-0.16,fontSize:8.5,color:C.W,fontFace:'Calibri',wrap:true});
+      });
+    }
+
+    // ══════════════════════════════════════ 15. CUSTOM AI SLIDE ══
+    else if(s.typeId==='custom'){
+      hdr(sl,'Custom Analysis',`${g.tgt} — AI-Generated Content`);
+      if(s.aiContent){
+        const lines=s.aiContent.split('\n').filter(l=>l.trim());
+        let y=1.35;
+        for(const ln of lines){
+          if(y>6.9)break;
+          const txt=ln.replace(/^[#•\-]\s*/,'').trim();
+          if(!txt)continue;
+          const isBullet=ln.trim().startsWith('-')||ln.trim().startsWith('•');
+          const isTitle=!isBullet&&txt.length<70&&ln===ln.trim();
+          sl.addText(txt,{
+            x:isBullet?0.7:0.4,y,w:isBullet?12.1:12.5,
+            h:isBullet?0.36:0.44,
+            fontSize:isBullet?9:isTitle?11.5:10,
+            bold:isTitle,
+            color:isTitle?C.G2:C.W,
+            fontFace:'Calibri',wrap:true,
+            indent:isBullet?0.2:0,
+          });
+          y+=isBullet?0.38:0.48;
+        }
+      } else {
+        sl.addText('No AI content generated.\nGo to AI Tools → Custom Slide Generator, generate content, then click "Add to Deck".',
+          {x:0.5,y:3.2,w:12,h:1.0,fontSize:12,color:C.GR,fontFace:'Calibri',align:'center',wrap:true});
+      }
+    }
+
+  } // ← closes the for(const s of slides) loop
+
+  // ── write file ──────────────────────────────────────────────────────────────
+  const tgt=(g.tgt||'Pitchbook').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  const date=new Date().toISOString().slice(0,10);
+  const fname=`DealDeck_${tgt}_${date}.pptx`;
+  await pptx.writeFile({fileName:fname});
+  showToast(`✅ Generated: ${fname}`);
+
+} // ← closes generatePPT()
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
-  // Check PptxGenJS loaded
   if(typeof PptxGenJS==='undefined'){
     document.getElementById('pptxErr').style.display='block';
   }
-  renderLibrary();renderDeck();refreshDealSelector();
-  if(apiKey){const el=document.getElementById('apiKeyInput');if(el)el.value=apiKey;}
-  const today=new Date();
-  document.getElementById('s-ann').value=today.toISOString().split('T')[0];
-  const close=new Date(today);close.setMonth(close.getMonth()+6);
-  document.getElementById('s-close').value=close.toISOString().split('T')[0];
+  const keyEl=document.getElementById('ai-key');
+  if(keyEl&&apiKey)keyEl.value=apiKey;
+  renderPalette();
+  renderSlides();
+  renderSavedDeals();
 });
 </script>
 </body>
